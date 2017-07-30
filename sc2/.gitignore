@@ -29,8 +29,10 @@
 
 # Build results
 [Dd]ebug/
+[Dd]ebug_NoAccel/
 [Dd]ebugPublic/
 [Rr]elease/
+[Rr]elease_NoAccel/
 [Rr]eleases/
 x64/
 x86/
