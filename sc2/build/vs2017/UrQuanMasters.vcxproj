@@ -133,8 +133,7 @@
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <!--<OutputFile>../../uqmdebug.exe</OutputFile>-->
-     <AdditionalDependencies>odbc32.lib;odbccp32.lib;SDL.lib;SDLmain.lib;SDL_image.lib;ws2_32.lib;zlibwapi.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
-
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;SDL.lib;SDLmain.lib;SDL_image.lib;ws2_32.lib;zlibwapi.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <!--<AdditionalDependencies>odbc32.lib;odbccp32.lib;SDL.lib;SDLmain.lib;SDL_image.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>-->
     </Link>
   </ItemDefinitionGroup>
