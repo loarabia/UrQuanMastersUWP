@@ -128,15 +128,21 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 					"under pure SDL, using 640x480", width, height);
 	}
 
-	videomode_flags |= SDL_ANYFORMAT;
+	//videomode_flags |= SDL_ANYFORMAT;
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
-		videomode_flags |= SDL_FULLSCREEN;
+		videomode_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	/* We'll ask for a 32bpp frame, but it doesn't really matter, because we've set
 	   SDL_ANYFORMAT */
-	SDL_Video = SDL_SetVideoMode (ScreenWidthActual, ScreenHeightActual, 
-		32, videomode_flags);
 
+	SDL_MainWindow = SDL_CreateWindow("UQM",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		ScreenWidthActual, ScreenHeightActual,
+		videomode_flags);
+
+	SDL_Video = SDL_GetWindowSurface(SDL_MainWindow);
+	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, SDL_RENDERER_SOFTWARE);
 	if (SDL_Video == NULL)
 	{
 		log_add (log_Error, "Couldn't set %ix%i video mode: %s",
@@ -146,7 +152,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	}
 	else
 	{
-		const SDL_Surface *video = SDL_GetVideoSurface ();
+		const SDL_Surface *video = SDL_GetWindowSurface(SDL_MainWindow);
 		const SDL_PixelFormat* fmt = video->format;
 
 		ScreenColorDepth = fmt->BitsPerPixel;
@@ -237,8 +243,8 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 
 	log_add (log_Info, "Initializing Pure-SDL graphics.");
 
-	SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	log_add (log_Info, "SDL driver used: %s", VideoName);
+	/*SDL_VideoDriverName (VideoName, sizeof (VideoName));
+	log_add (log_Info, "SDL driver used: %s", VideoName);*/
 			// Set the environment variable SDL_VIDEODRIVER to override
 			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
 			//            ggi, aalib
@@ -376,14 +382,13 @@ TFB_Pure_Scaled_Postprocess (void)
 	if (scalebuffer != SDL_Video)
 		SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
 
-	SDL_UpdateRects (SDL_Video, 1, &updated);
+	SDL_UpdateWindowSurfaceRects(SDL_MainWindow, &updated, 1);
 }
 
 static void
 TFB_Pure_Unscaled_Postprocess (void)
 {
-	SDL_UpdateRect (SDL_Video, updated.x, updated.y,
-			updated.w, updated.h);
+	SDL_UpdateWindowSurfaceRects(SDL_MainWindow, &updated, 1);
 }
 
 static void
@@ -391,7 +396,7 @@ TFB_Pure_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 {
 	if (SDL_Screens[screen] == backbuffer)
 		return;
-	SDL_SetAlpha (SDL_Screens[screen], SDL_SRCALPHA, a);
+	SDL_SetSurfaceAlphaMod (SDL_Screens[screen], a);
 	SDL_BlitSurface (SDL_Screens[screen], rect, backbuffer, rect);
 }	
 
@@ -404,56 +409,56 @@ TFB_Pure_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect)
 		fade_color = col;
 		SDL_FillRect (fade_color_surface, NULL, fade_color);
 	}
-	SDL_SetAlpha (fade_color_surface, SDL_SRCALPHA, a);
+	SDL_SetSurfaceAlphaMod(fade_color_surface, a);
 	SDL_BlitSurface (fade_color_surface, rect, backbuffer, rect);
 }
 
-void
-Scale_PerfTest (void)
-{
-	TimeCount TimeStart, TimeIn;
-	TimeCount Now = 0;
-	SDL_Rect updated = {0, 0, ScreenWidth, ScreenHeight};
-	int i;
-
-	if (!scaler)
-	{
-		log_add (log_Error, "No scaler configured! "
-				"Run with larger resolution, please");
-		return;
-	}
-	if (!scaled_display)
-	{
-		log_add (log_Error, "Run scaler performance tests "
-				"in Pure mode, please");
-		return;
-	}
-
-	SDL_LockSurface (SDL_Screen);
-	SDL_LockSurface (scaled_display);
-
-	TimeStart = TimeIn = SDL_GetTicks ();
-
-	for (i = 1; i < 1001; ++i) // run for 1000 frames
-	{
-		scaler (SDL_Screen, scaled_display, &updated);
-		
-		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-			ScanLines (scaled_display, &updated);
-
-		if (i % 100 == 0)
-		{
-			Now = SDL_GetTicks ();
-			log_add (log_Debug, "%03d(%04u) ", 100*1000 / (Now - TimeIn),
-					Now - TimeIn);
-			TimeIn = Now;
-		}
-	}
-
-	log_add (log_Debug, "Full frames scaled: %d; over %u ms; %d fps\n",
-			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
-
-	SDL_UnlockSurface (scaled_display);
-	SDL_UnlockSurface (SDL_Screen);
-}
-
+//void
+//Scale_PerfTest (void)
+//{
+//	TimeCount TimeStart, TimeIn;
+//	TimeCount Now = 0;
+//	SDL_Rect updated = {0, 0, ScreenWidth, ScreenHeight};
+//	int i;
+//
+//	if (!scaler)
+//	{
+//		log_add (log_Error, "No scaler configured! "
+//				"Run with larger resolution, please");
+//		return;
+//	}
+//	if (!scaled_display)
+//	{
+//		log_add (log_Error, "Run scaler performance tests "
+//				"in Pure mode, please");
+//		return;
+//	}
+//
+//	SDL_LockSurface (SDL_Screen);
+//	SDL_LockSurface (scaled_display);
+//
+//	TimeStart = TimeIn = SDL_GetTicks ();
+//
+//	for (i = 1; i < 1001; ++i) // run for 1000 frames
+//	{
+//		scaler (SDL_Screen, scaled_display, &updated);
+//		
+//		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
+//			ScanLines (scaled_display, &updated);
+//
+//		if (i % 100 == 0)
+//		{
+//			Now = SDL_GetTicks ();
+//			log_add (log_Debug, "%03d(%04u) ", 100*1000 / (Now - TimeIn),
+//					Now - TimeIn);
+//			TimeIn = Now;
+//		}
+//	}
+//
+//	log_add (log_Debug, "Full frames scaled: %d; over %u ms; %d fps\n",
+//			(i - 1), Now - TimeStart, i * 1000 / (Now - TimeStart));
+//
+//	SDL_UnlockSurface (scaled_display);
+//	SDL_UnlockSurface (SDL_Screen);
+//}
+//
