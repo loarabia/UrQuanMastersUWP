@@ -2786,6 +2786,9 @@
     <ClInclude Include="..\..\src\uqmversion.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\config_vs2017.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\doc\users\manual.txt">

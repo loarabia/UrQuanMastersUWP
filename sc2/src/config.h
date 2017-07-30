@@ -2,11 +2,15 @@
  */
 
 #ifdef _MSC_VER
+#if _MSC_VER >= 1910
+#   include "config_vs2017.h"
+#else
 	/* In this case, build.sh is not run to generate a config file, so
 	 * we use a default file config_vc6.h instead.
 	 * If you want anything else than the defaults, you'll have to edit
 	 * that file manually. */
 #	include "config_vc6.h"
+#endif /* _MSC_VER > 1910 */
 #elif defined(__SYMBIAN32__)
 #	include "symbian/config.h"
 #elif defined (__MINGW32__) || defined (__CYGWIN__)
@@ -18,4 +22,3 @@
 	 * src/config_unix.h.in by build.sh. */
 #	include "config_unix.h"
 #endif
-

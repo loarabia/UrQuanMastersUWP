@@ -24,9 +24,7 @@
     <ProjectGuid>{9AF8F380-1E87-419D-9993-29891E83F39B}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
@@ -644,6 +642,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\config.h" />
     <ClInclude Include="..\..\src\config_vc6.h" />
+    <ClInclude Include="..\..\src\config_vs2017.h" />
     <ClInclude Include="..\..\src\endian_uqm.h" />
     <ClInclude Include="..\..\src\getopt\getopt.h" />
     <ClInclude Include="..\..\src\libs\alarm.h" />
@@ -1131,7 +1130,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <Target Name="AfterBuild" >
+  <Target Name="AfterBuild">
     <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release NoAccel|Win32'">
       <SourceFiles Include="$(VcpkgRoot)bin\*.dll" />
     </ItemGroup>
