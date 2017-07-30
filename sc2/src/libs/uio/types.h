@@ -34,6 +34,10 @@
 //   use in #if preprocessing directives.
 // - A macro "__bool_true_false_are_defined", which expands to the integer
 //   constant 1, suitable for use in #if preprocessing directives.
+#if defined(_MSC_VER) && (_MSC_VER >= 1910)
+#include <stdbool.h>
+#endif
+
 #ifndef __bool_true_false_are_defined
 #undef bool
 #undef false
