@@ -2,6 +2,14 @@ You're looking at the readme for 'The Ur-Quan Masters', a volunteer
 project that intends to bring the classic game 'Star Control II' to
 modern systems.
 
+NOTE: This readme is specific to git branch: bld-master-with-src-deps.
+The purpose of this branch is as an archive of the oringnal build on Windows
+as at the time of authoring this, it was difficult to find the exact dependencies
+that UQM used.
+
+This branch should not be pushed upstream to a mainline branch but some changes
+ in it are worth cherry picking.
+
 The program code that comprises 'The Ur-Quan Masters' was derived from code
 written by Toys for Bob, Inc. for the 3DO version of 'Star Control II', with
 their permission and encouragement.
