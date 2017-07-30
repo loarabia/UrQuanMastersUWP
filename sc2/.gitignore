@@ -68,6 +68,7 @@ bld/
 *.pidb
 *.svclog
 *.scc
+*.bsc
 
 # Visual C++ cache files
 ipch/
