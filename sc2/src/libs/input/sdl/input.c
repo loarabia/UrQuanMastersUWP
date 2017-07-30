@@ -253,8 +253,7 @@ TFB_InitInput (int driver, int flags)
 	(void)driver;
 	(void)flags;
 
-	SDL_EnableUNICODE(1);
-	(void)SDL_GetKeyState (&num_keys);
+	(void)SDL_GetKeyboardState (&num_keys);
 	kbdstate = (int *)HMalloc (sizeof (int) * (num_keys + 1));
 	
 
@@ -340,12 +339,12 @@ ProcessMouseEvent (const SDL_Event *e)
 static inline int
 is_numpad_char_event (const SDL_Event *Event)
 {
-	return in_character_mode &&
+	//TODO FIX ME: The way SDL works now, this might come through as TextInput events. Need to check with a little experiment.
+ 	return in_character_mode &&
 			(Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP) &&
 			(Event->key.keysym.mod & KMOD_NUM) &&  /* NumLock is ON */
-			Event->key.keysym.unicode > 0 &&       /* Printable char */
-			Event->key.keysym.sym >= SDLK_KP0 &&   /* Keypad key */
-			Event->key.keysym.sym <= SDLK_KP_PLUS;
+			Event->key.keysym.sym >= SDLK_KP_0 &&   /* Keypad key */
+			Event->key.keysym.sym <= SDLK_KP_XOR;
 }
 
 void
@@ -358,26 +357,27 @@ ProcessInputEvent (const SDL_Event *Event)
 
 	// In character mode with NumLock on, numpad chars bypass VControl
 	// so that menu arrow events are not produced
+	//TODO FIX ME: should this be inside the below check for KEYDOWN OR KEYUP? the IF statement inside numpadchar appears to be such.
+	// made a bunch of stupid GOOFs acting hasty and coding late so put this one to bed for tonight.
 	if (!is_numpad_char_event (Event))
 		VControl_HandleEvent (Event);
 
 	if (Event->type == SDL_KEYDOWN || Event->type == SDL_KEYUP)
 	{	// process character input event, if any
-		// keysym.sym is an SDLKey type which is an enum and can be signed
+		// keysym.sym is an SDL_Keycode type which is an enum and can be signed
 		// or unsigned on different platforms; we'll use a guaranteed type
-		int k = Event->key.keysym.sym;
-		UniChar map_key = Event->key.keysym.unicode;
+		int k = Event->key.keysym.scancode;
 
 		if (k < 0 || k > num_keys)
 			k = num_keys; // for unknown keys
 
 		if (Event->type == SDL_KEYDOWN)
 		{
-			int newtail;
-
-			// dont care about the non-printable, non-char
-			if (!map_key)
+			if (Event->key.repeat) {
 				return;
+			}
+
+			int newtail;
 
 			kbdstate[k]++;
 			
@@ -385,9 +385,9 @@ ProcessInputEvent (const SDL_Event *Event)
 			// ignore the char if the buffer is full
 			if (newtail != kbdhead)
 			{
-				kbdbuf[kbdtail] = map_key;
+				kbdbuf[kbdtail] = k;
 				kbdtail = newtail;
-				lastchar = map_key;
+				lastchar = k;
 				menu_vec[KEY_MENU_ANY]++;
 			}
 		}
