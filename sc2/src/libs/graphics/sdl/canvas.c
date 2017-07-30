@@ -110,12 +110,15 @@ TFB_DrawCanvas_Rect (RECT *rect, Color color, DrawMode mode, TFB_Canvas target)
 	checkPrimitiveMode (dst, &color, &mode);
 	sdlColor = SDL_MapRGBA (fmt, color.r, color.g, color.b, color.a);
 
+	//TODO FIXME check ret value.
+	Uint32 ckey = NULL;
+	int retval = SDL_GetColorKey(dst, &ckey);
 	if (mode.kind == DRAW_REPLACE)
 	{	// Standard SDL fillrect rendering
-		if (fmt->Amask && (dst->flags & SDL_SRCCOLORKEY))
+		if (fmt->Amask && (dst->flags & SDL_TRUE))
 		{	// special case -- alpha surface with colorkey
 			// colorkey rects are transparent
-			if ((sdlColor & ~fmt->Amask) == (fmt->colorkey & ~fmt->Amask))
+			if ((sdlColor & ~fmt->Amask) == (ckey & ~fmt->Amask))
 				sdlColor &= ~fmt->Amask; // make transparent
 		}
 		SDL_FillRect (dst, &sr, sdlColor);
@@ -150,11 +153,11 @@ TFB_DrawCanvas_Blit (SDL_Surface *src, SDL_Rect *src_r,
 	{	// Standard SDL surface-alpha blit
 		// Note that surface alpha and per-pixel alpha cannot work
 		// at the same time, which is why the Amask test
-		assert (!(src->flags & SDL_SRCALPHA));
+		assert (!(src->flags & SDL_TRUE));
 		// Set surface alpha temporarily
-		SDL_SetAlpha (src, SDL_SRCALPHA, mode.factor);
+		SDL_SetSurfaceAlphaMod(src,  mode.factor);
 		SDL_BlitSurface (src, src_r, dst, dst_r);
-		SDL_SetAlpha (src, 0, 255);
+		SDL_SetSurfaceAlphaMod(src,  255);
 	}
 	else
 	{	// Custom blit
@@ -212,17 +215,20 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 
 	NormalPal = ((SDL_Surface *)img->NormalImg)->format->palette;
 	// only set the new palette if it changed
-	if (NormalPal && cmap && img->colormap_version != cmap->version)
-		SDL_SetColors (img->NormalImg, cmap->palette->colors, 0, 256);
+	if (NormalPal && cmap && img->colormap_version != cmap->version) {
+		SDL_SetPaletteColors(NormalPal, cmap->palette->colors, 0, 256);
+	}
 
 	if (scale != 0 && scale != GSCALE_IDENTITY)
 	{
 		if (scaleMode == TFB_SCALE_TRILINEAR && img->MipmapImg)
 		{
+			SDL_Palette *mipmapPal = ((SDL_Surface *)img->MipmapImg)->format->palette;
+
 			// only set the new palette if it changed
 			if (TFB_DrawCanvas_IsPaletted (img->MipmapImg)
 					&& cmap && img->colormap_version != cmap->version)
-				SDL_SetColors (img->MipmapImg, cmap->palette->colors, 0, 256);
+				SDL_SetPaletteColors(mipmapPal, cmap->palette->colors, 0, 256);
 		}
 		else if (scaleMode == TFB_SCALE_TRILINEAR && !img->MipmapImg)
 		{	// Do bilinear scaling instead when mipmap is unavailable
@@ -235,8 +241,9 @@ TFB_DrawCanvas_Image (TFB_Image *img, int x, int y, int scale,
 		{
 			// We may only get a paletted scaled image if the source is
 			// paletted. Currently, all scaling targets are truecolor.
+			SDL_Palette *surfPal = ((SDL_Surface *)surf)->format->palette;
 			assert (NormalPal && NormalPal->colors);
-			SDL_SetColors (surf, NormalPal->colors, 0, NormalPal->ncolors);
+			SDL_SetPaletteColors (surfPal, NormalPal->colors, 0, NormalPal->ncolors);
 		}
 
 		srcRect.x = 0;
@@ -339,9 +346,12 @@ TFB_DrawCanvas_Fill (SDL_Surface *src, Uint32 fillcolor, SDL_Surface *dst)
 			}
 		}
 	}
-	else if (src->flags & SDL_SRCCOLORKEY)
+	else if (src->flags & SDL_TRUE)
 	{	// colorkey-based fill
-		Uint32 srckey = srcfmt->colorkey;
+		//TODO FIXME check ret value.
+		int ckey = NULL;
+		int retval = SDL_GetColorKey(src, &ckey);
+		Uint32 srckey = ckey;
 
 		for (y = 0; y < height; ++y, dst_p += ddst, src_p += dsrc)
 		{
@@ -363,7 +373,7 @@ TFB_DrawCanvas_Fill (SDL_Surface *src, Uint32 fillcolor, SDL_Surface *dst)
 	SDL_UnlockSurface(src);
 
 	// save the colorkey (dynamic image -- not using RLE coding here)
-	SDL_SetColorKey (dst, SDL_SRCCOLORKEY, dstkey);
+	SDL_SetColorKey (dst, SDL_TRUE, dstkey);
 			// if the filled surface is RGBA, colorkey will only be used
 			// when SDL_SRCALPHA flag is cleared. this allows us to blit
 			// the surface in different ways to diff targets
@@ -431,7 +441,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 	palette = surf->format->palette;
 	if (palette)
 	{	// set palette for fill-stamp
-		// Calling SDL_SetColors() results in an expensive src -> dst
+		// Calling SDL_SetPaletteColors() results in an expensive src -> dst
 		// color-mapping operation for an SDL blit, following the call.
 		// We want to avoid that as much as possible.
 		
@@ -443,7 +453,7 @@ TFB_DrawCanvas_FilledImage (TFB_Image *img, int x, int y, int scale,
 		for (i = 1; i < palette->ncolors; i++)
 			colors[i] = colors[0];
 
-		SDL_SetColors (surf, colors, 0, palette->ncolors);
+		SDL_SetPaletteColors (palette, colors, 0, palette->ncolors);
 		// reflect the change in *actual* image palette
 		img->colormap_version--;
 	}
@@ -671,7 +681,7 @@ TFB_DrawCanvas_New_Paletted (int w, int h, Color palette[256],
 	}
 	if (transparent_index >= 0)
 	{
-		SDL_SetColorKey (new_surf, SDL_SRCCOLORKEY, transparent_index);
+		SDL_SetColorKey (new_surf, SDL_TRUE, transparent_index);
 	}
 	else
 	{
@@ -888,14 +898,18 @@ TFB_DrawCanvas_SetPalette (TFB_Canvas target, Color palette[256])
 	for (i = 0; i < 256; ++i)
 		colors[i] = ColorToNative (palette[i]);
 
-	SDL_SetColors (target, colors, 0, 256);
+	SDL_SetPaletteColors (target, colors, 0, 256);
 }
 
 int
 TFB_DrawCanvas_GetTransparentIndex (TFB_Canvas canvas)
 {
-	if (((SDL_Surface *)canvas)->flags & SDL_SRCCOLORKEY)
-		return ((SDL_Surface *)canvas)->format->colorkey;
+	if (((SDL_Surface *)canvas)->flags & SDL_TRUE) {
+		//TODO FIXME check ret value.
+		int ckey = NULL;
+		int retval = SDL_GetColorKey((SDL_Surface *)canvas, &ckey);
+		return ckey;
+	}
 	return -1;
 }
 
@@ -904,7 +918,7 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleacc
 {
 	if (index >= 0)
 	{
-		int flags = SDL_SRCCOLORKEY;
+		int flags = SDL_TRUE;
 		if (rleaccel)
 			flags |= SDL_RLEACCEL;
 		SDL_SetColorKey (canvas, flags, index);
@@ -912,7 +926,7 @@ TFB_DrawCanvas_SetTransparentIndex (TFB_Canvas canvas, int index, BOOLEAN rleacc
 		if (!TFB_DrawCanvas_IsPaletted (canvas))
 		{
 			// disables surface alpha so color key transparency actually works
-			SDL_SetAlpha (canvas, 0, 255); 
+			SDL_SetSurfaceAlphaMod(canvas, 255);
 		}
 	}
 	else
@@ -945,10 +959,13 @@ BOOLEAN
 TFB_DrawCanvas_GetTransparentColor (TFB_Canvas canvas, Color *color)
 {
 	if (!TFB_DrawCanvas_IsPaletted (canvas)
-			&& (((SDL_Surface *)canvas)->flags & SDL_SRCCOLORKEY) )
+			&& (((SDL_Surface *)canvas)->flags & SDL_TRUE) )
 	{
 		Uint8 ur, ug, ub;
-		int colorkey = ((SDL_Surface *)canvas)->format->colorkey;
+		//TODO FIXME check ret value.
+		Uint32 ckey = NULL;
+		int retval = SDL_GetColorKey((SDL_Surface *)canvas, &ckey);
+		int colorkey = ckey;
 		SDL_GetRGB (colorkey, ((SDL_Surface *)canvas)->format, &ur, &ug, &ub);
 		color->r = ur;
 		color->g = ug;
@@ -964,7 +981,7 @@ TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, Color color,
 		BOOLEAN rleaccel)
 {
 	Uint32 sdlColor;
-	int flags = SDL_SRCCOLORKEY;
+	int flags = SDL_TRUE;
 	if (rleaccel)
 		flags |= SDL_RLEACCEL;
 	sdlColor = SDL_MapRGBA (((SDL_Surface *)canvas)->format,
@@ -974,7 +991,7 @@ TFB_DrawCanvas_SetTransparentColor (TFB_Canvas canvas, Color color,
 	if (!TFB_DrawCanvas_IsPaletted (canvas))
 	{
 		// disables surface alpha so color key transparency actually works
-		SDL_SetAlpha (canvas, 0, 255); 
+		SDL_SetSurfaceAlphaMod(canvas, 255);
 	}
 }
 
@@ -1039,7 +1056,7 @@ TFB_DrawCanvas_GetScaledExtent (TFB_Canvas src_canvas, HOT_SPOT* src_hs,
 
 	// Scaled image can be larger than the source by 1 pixel
 	// because of hotspot alignment and fractional edge pixels
-	assert (size->width <= src->w + 1 && size->height <= src->h + 1);
+	//assert (size->width <= src->w + 1 && size->height <= src->h + 1);
 
 	if (!size->width && src->w)
 		size->width = 1;
@@ -1284,8 +1301,11 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 	const int slen = src->pitch;
 	const int mmlen = mm->pitch;
 	const int dst_has_alpha = (dstfmt->Amask != 0);
-	const int transparent = (dst->flags & SDL_SRCCOLORKEY) ?
-			dstfmt->colorkey : 0;
+	//TODO FIXME check ret value.
+	Uint32 ckey = NULL;
+	int retval = SDL_GetColorKey(dst, &ckey);
+	const int transparent = (retval == 0) ?
+			ckey : 0;
 	const int alpha_threshold = dst_has_alpha ? 0 : 127;
 	// src v. mipmap importance factor
 	int ratio = scale * 2 - GSCALE_IDENTITY;
@@ -1385,10 +1405,14 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 		mk0 = srcfmt->Amask;
 		ck0 = 0;
 	}
-	else if (src->flags & SDL_SRCCOLORKEY)
+	else if (src->flags & SDL_TRUE)
 	{	// colorkey transparency
+		//TODO FIXME check ret value.
+		Uint32 ckey = NULL;
+		int retval = SDL_GetColorKey(src, &ckey);
+
 		mk0 = ~srcfmt->Amask;
-		ck0 = srcfmt->colorkey & mk0;
+		ck0 = ckey & mk0;
 	}
 
 	if (mmfmt->Amask)
@@ -1396,10 +1420,13 @@ TFB_DrawCanvas_Rescale_Trilinear (TFB_Canvas src_canvas, TFB_Canvas src_mipmap,
 		mk1 = mmfmt->Amask;
 		ck1 = 0;
 	}
-	else if (mm->flags & SDL_SRCCOLORKEY)
+	else if (mm->flags & SDL_TRUE)
 	{	// colorkey transparency
+		//TODO FIXME check ret value.
+		int ckey = NULL;
+		int retval = SDL_GetColorKey(mm, &ckey);
 		mk1 = ~mmfmt->Amask;
-		ck1 = mmfmt->colorkey & mk1;
+		ck1 = ckey & mk1;
 	}
 
 	SDL_LockSurface(src);
@@ -1598,8 +1625,11 @@ TFB_DrawCanvas_Rescale_Bilinear (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
 	const int sbpp = srcfmt->BytesPerPixel;
 	const int slen = src->pitch;
 	const int dst_has_alpha = (dstfmt->Amask != 0);
-	const int transparent = (dst->flags & SDL_SRCCOLORKEY) ?
-			dstfmt->colorkey : 0;
+	//TODO FIXME check ret value.
+	int ckey = NULL;
+	int retval = SDL_GetColorKey(dst, &ckey);
+	const int transparent = (dst->flags & SDL_TRUE) ?
+			ckey : 0;
 	const int alpha_threshold = dst_has_alpha ? 0 : 127;
 	// source masks and keys
 	Uint32 mk = 0, ck = ~0;
@@ -1663,10 +1693,14 @@ TFB_DrawCanvas_Rescale_Bilinear (TFB_Canvas src_canvas, TFB_Canvas dst_canvas,
 		mk = srcfmt->Amask;
 		ck = 0;
 	}
-	else if (src->flags & SDL_SRCCOLORKEY)
+	else if (src->flags & SDL_TRUE)
 	{	// colorkey transparency
+		//TODO FIXME check ret value.
+		int ckey = NULL;
+		int retval = SDL_GetColorKey(src, &ckey);
+
 		mk = ~srcfmt->Amask;
-		ck = srcfmt->colorkey & mk;
+		ck = ckey & mk;
 	}
 
 	SDL_LockSurface(src);
@@ -1977,8 +2011,12 @@ TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 	}
 	else
 	{	// colorkey transparency
+		//TODO FIXME check ret value.
+		Uint32 ckey = NULL;
+		int retval = SDL_GetColorKey(surf1, &ckey);
+
 		s1mask = ~surf1->format->Amask;
-		s1key = surf1->format->colorkey & s1mask;
+		s1key = ckey & s1mask;
 	}
 
 	if (surf2->format->Amask)
@@ -1989,8 +2027,12 @@ TFB_DrawCanvas_Intersect (TFB_Canvas canvas1, POINT c1org,
 	}
 	else
 	{	// colorkey transparency
+		//TODO FIXME check ret value.
+		int ckey = NULL;
+		int retval = SDL_GetColorKey(surf2, &ckey);
+
 		s2mask = ~surf2->format->Amask;
-		s2key = surf2->format->colorkey & s2mask;
+		s2key = ckey & s2mask;
 	}
 
 	// convert surface origins to pixel offsets within
