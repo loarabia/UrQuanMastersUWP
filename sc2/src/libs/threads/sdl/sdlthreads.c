@@ -255,8 +255,8 @@ CreateThread_SDL (ThreadFunction func, void *data, SDWORD stackSize
 	startInfo->data = data;
 	startInfo->sem = SDL_CreateSemaphore (0);
 	startInfo->thread = thread;
-	
-	thread->native = SDL_CreateThread (ThreadHelper, (void *) startInfo);
+
+	thread->native = SDL_CreateThread(ThreadHelper, name, (void *)startInfo);
 	if (!(thread->native))
 	{
 		DestroyThreadLocal (thread->localData);
