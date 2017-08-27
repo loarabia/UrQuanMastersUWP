@@ -530,8 +530,8 @@ pickupMineralNode (PLANETSIDE_DESC *pPSD, COUNT NumRetrieved,
 		const INTERSECT_CONTROL *ElementControl)
 {
 	BYTE EType;
-	UNICODE ch;
-	UNICODE *pStr;
+	UQM_UTF8_T ch;
+	UQM_UTF8_T *pStr;
 
 	if (pPSD->ElementLevel >= pPSD->MaxElementLevel)
 	{

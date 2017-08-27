@@ -99,9 +99,9 @@ FindStar (STAR_DESC *LastSDPtr, POINT *puniverse, SIZE xbounds,
 }
 
 void
-GetClusterName (const STAR_DESC *pSD, UNICODE buf[])
+GetClusterName (const STAR_DESC *pSD, UQM_UTF8_T buf[])
 {
-	UNICODE *pBuf, *pStr;
+	UQM_UTF8_T *pBuf, *pStr;
 
 	pBuf = buf;
 	if (pSD->Prefix)

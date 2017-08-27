@@ -58,7 +58,7 @@ DrawRestartMenuGraphic (MENU_STATE *pMS)
 	RECT r;
 	STAMP s;
 	TEXT t;
-	UNICODE buf[64];
+	UQM_UTF8_T buf[64];
 
 	s.frame = pMS->CurFrame;
 	GetFrameRect (s.frame, &r);

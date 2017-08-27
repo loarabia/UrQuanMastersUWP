@@ -168,7 +168,7 @@ static BOOLEAN
 DeltaSupportCrew (ROSTER_STATE *rosterState, SIZE crew_delta)
 {
 	BOOLEAN ret = FALSE;
-	UNICODE buf[40];
+	UQM_UTF8_T buf[40];
 	HFLEETINFO hTemplate;
 	HSHIPFRAG hShipFrag;
 	SHIP_FRAGMENT *StarShipPtr;

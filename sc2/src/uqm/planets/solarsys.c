@@ -1744,7 +1744,7 @@ ExploreSolarSys (void)
 	pSolarSysState = 0;
 }
 
-UNICODE *
+UQM_UTF8_T *
 GetNamedPlanetaryBody (void)
 {
 	if (!CurStarDescPtr || !playerInSolarSystem () || !playerInInnerSystem ())
@@ -1822,9 +1822,9 @@ GetNamedPlanetaryBody (void)
 }
 
 void
-GetPlanetOrMoonName (UNICODE *buf, COUNT bufsize)
+GetPlanetOrMoonName (UQM_UTF8_T *buf, COUNT bufsize)
 {
-	UNICODE *named;
+	UQM_UTF8_T *named;
 	int moon;
 	int i;
 

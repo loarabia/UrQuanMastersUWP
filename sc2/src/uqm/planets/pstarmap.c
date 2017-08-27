@@ -254,7 +254,7 @@ GetSphereRect (FLEET_INFO *FleetPtr, RECT *pRect, RECT *pRepairRect)
 		t.align = ALIGN_CENTER;
 		locString = SetAbsStringTableIndex (FleetPtr->race_strings, 1);
 		t.CharCount = GetStringLength (locString);
-		t.pStr = (UNICODE *)GetStringAddress (locString);
+		t.pStr = (UQM_UTF8_T *)GetStringAddress (locString);
 		TextRect (&t, pRepairRect, NULL);
 		
 		if (pRepairRect->corner.x <= 0)
@@ -451,7 +451,7 @@ DrawStarMap (COUNT race_update, RECT *pClipRect)
 					locString = SetAbsStringTableIndex (
 							FleetPtr->race_strings, 1);
 					t.CharCount = GetStringLength (locString);
-					t.pStr = (UNICODE *)GetStringAddress (locString);
+					t.pStr = (UQM_UTF8_T *)GetStringAddress (locString);
 					TextRect (&t, &r, NULL);
 
 					if (r.corner.x <= 0)
@@ -694,9 +694,9 @@ UpdateCursorLocation (int sx, int sy, const POINT *newpt)
 #define CURSOR_INFO_BUFSIZE 256
 
 static void
-UpdateCursorInfo (UNICODE *prevbuf)
+UpdateCursorInfo (UQM_UTF8_T *prevbuf)
 {
-	UNICODE buf[CURSOR_INFO_BUFSIZE] = "";
+	UQM_UTF8_T buf[CURSOR_INFO_BUFSIZE] = "";
 	POINT pt;
 	STAR_DESC *SDPtr;
 	STAR_DESC *BestSDPtr;
@@ -768,7 +768,7 @@ UpdateCursorInfo (UNICODE *prevbuf)
 static void
 UpdateFuelRequirement (void)
 {
-	UNICODE buf[80];
+	UQM_UTF8_T buf[80];
 	COUNT fuel_required;
 	DWORD f;
 	POINT pt;
@@ -803,17 +803,17 @@ typedef struct starsearch_state
 {
 	// TODO: pMS field is probably not needed anymore
 	MENU_STATE *pMS;
-	UNICODE Text[STAR_SEARCH_BUFSIZE];
-	UNICODE LastText[STAR_SEARCH_BUFSIZE];
+	UQM_UTF8_T Text[STAR_SEARCH_BUFSIZE];
+	UQM_UTF8_T LastText[STAR_SEARCH_BUFSIZE];
 	DWORD LastChangeTime;
 	int FirstIndex;
 	int CurIndex;
 	int LastIndex;
 	BOOLEAN SingleClust;
 	BOOLEAN SingleMatch;
-	UNICODE Buffer[STAR_SEARCH_BUFSIZE];
-	const UNICODE *Prefix;
-	const UNICODE *Cluster;
+	UQM_UTF8_T Buffer[STAR_SEARCH_BUFSIZE];
+	const UQM_UTF8_T *Prefix;
+	const UQM_UTF8_T *Cluster;
 	int PrefixLen;
 	int ClusterLen;
 	int ClusterPos;
@@ -858,9 +858,9 @@ SortStarsOnName (STAR_SEARCH_STATE *pSS)
 static void
 SplitStarName (STAR_SEARCH_STATE *pSS)
 {
-	UNICODE *buf = pSS->Buffer;
-	UNICODE *next;
-	UNICODE *sep = NULL;
+	UQM_UTF8_T *buf = pSS->Buffer;
+	UQM_UTF8_T *next;
+	UQM_UTF8_T *sep = NULL;
 
 	pSS->Prefix = 0;
 	pSS->PrefixLen = 0;
@@ -870,7 +870,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 
 	// skip leading space
 	for (next = buf; *next != '\0' &&
-			getCharFromString ((const UNICODE **)&next) == ' ';
+			getCharFromString ((const UQM_UTF8_T **)&next) == ' ';
 			buf = next)
 		;
 	if (*buf == '\0')
@@ -882,7 +882,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 
 	// See if player gave a prefix
 	for (buf = next; *next != '\0' &&
-			getCharFromString ((const UNICODE **)&next) != ' ';
+			getCharFromString ((const UQM_UTF8_T **)&next) != ' ';
 			buf = next)
 		;
 	if (*buf != '\0')
@@ -890,7 +890,7 @@ SplitStarName (STAR_SEARCH_STATE *pSS)
 		sep = buf;
 		// skip separating space
 		for (buf = next; *next != '\0' &&
-				getCharFromString ((const UNICODE **)&next) == ' ';
+				getCharFromString ((const UQM_UTF8_T **)&next) == ' ';
 				buf = next)
 			;
 	}
@@ -935,10 +935,10 @@ FindNextStarIndex (STAR_SEARCH_STATE *pSS, int from, BOOLEAN WithinClust)
 	for (i = from; i < NUM_SOLAR_SYSTEMS; ++i)
 	{
 		STAR_DESC *SDPtr = &star_array[pSS->SortedStars[i]];
-		UNICODE FullName[STAR_SEARCH_BUFSIZE];
-		UNICODE *ClusterName = GAME_STRING (SDPtr->Postfix);
-		const UNICODE *sptr;
-		const UNICODE *dptr;
+		UQM_UTF8_T FullName[STAR_SEARCH_BUFSIZE];
+		UQM_UTF8_T *ClusterName = GAME_STRING (SDPtr->Postfix);
+		const UQM_UTF8_T *sptr;
+		const UQM_UTF8_T *dptr;
 		int dlen;
 		int c;
 		
@@ -1016,7 +1016,7 @@ static void
 DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 {
 	STAR_SEARCH_STATE *pSS = (STAR_SEARCH_STATE *) pTES->CbParam;
-	UNICODE buf[STAR_SEARCH_BUFSIZE] = "";
+	UQM_UTF8_T buf[STAR_SEARCH_BUFSIZE] = "";
 	SIZE ExPos = 0;
 	SIZE CurPos = -1;
 	STAR_DESC *SDPtr = &star_array[pSS->SortedStars[pSS->CurIndex]];
@@ -1030,7 +1030,7 @@ DrawMatchedStarName (TEXTENTRY_STATE *pTES)
 	}
 	else
 	{	// draw substring match
-		UNICODE *pstr = buf;
+		UQM_UTF8_T *pstr = buf;
 
 		strcpy (pstr, pSS->Text);
 		ExPos = pSS->ClusterPos;
@@ -1213,7 +1213,7 @@ DoMoveCursor (MENU_STATE *pMS)
 #define MIN_ACCEL_DELAY (ONE_SECOND / 60)
 #define MAX_ACCEL_DELAY (ONE_SECOND / 8)
 #define STEP_ACCEL_DELAY (ONE_SECOND / 120)
-	static UNICODE last_buf[CURSOR_INFO_BUFSIZE];
+	static UQM_UTF8_T last_buf[CURSOR_INFO_BUFSIZE];
 	DWORD TimeIn = GetTimeCounter ();
 
 	if (!pMS->Initialized)

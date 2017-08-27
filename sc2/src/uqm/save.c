@@ -1161,7 +1161,7 @@ SaveProblemMessage (STAMP *MsgStamp)
 	RECT r = {{0, 0}, {0, 0}};
 	COUNT i;
 	TEXT t;
-	UNICODE *ppStr[MAX_MSG_LINES];
+	UQM_UTF8_T *ppStr[MAX_MSG_LINES];
 
 	// TODO: This should probably just use DoPopupWindow()
 

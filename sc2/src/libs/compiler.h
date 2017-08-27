@@ -36,7 +36,22 @@ typedef sint32           SDWORD;
 typedef UWORD             COUNT;
 typedef SWORD              SIZE;
 
-typedef char            UNICODE;
+/*
+TODO -- when compiling against UWP you have to compiler with both the _UNICODE 
+and UNICODE flags. As far as I can tell Visual Studio won't let you disable
+UNICODE. So right now I have a typedef which is 1 when it should be a type.
+
+Before making this change, I spent some time trying to figure out the UNICODE
+strategy of this codebase but its still not clear yet to me if this particular
+typedef is intended to hold something encoded as UTF8 or is agnostic of contents.
+
+I'll probably have to debug this live and throw some text in via the IME to see 
+where it flows through.
+
+In the meantime, I'm assuming it wants to have UTF8 encoded text.
+*/
+//typedef char            UNICODE;
+typedef char			UQM_UTF8_T;
 
 
 typedef enum

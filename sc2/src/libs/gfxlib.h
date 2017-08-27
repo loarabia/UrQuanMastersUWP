@@ -226,7 +226,7 @@ typedef enum
 typedef struct text
 {
 	POINT baseline;
-	const UNICODE *pStr;
+	const UQM_UTF8_T *pStr;
 	TEXT_ALIGN align;
 	COUNT CharCount;
 } TEXT;

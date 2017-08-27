@@ -39,9 +39,9 @@ struct joy_char
 };
 
 static int
-ReadOneChar (joy_char_t *ch, const UNICODE *str)
+ReadOneChar (joy_char_t *ch, const UQM_UTF8_T *str)
 {
-	UNICODE *next = skipUTF8Chars (str, 1);
+	UQM_UTF8_T *next = skipUTF8Chars (str, 1);
 	int len = next - str;
 	ch->len = len;
 	memcpy (ch->enc, str, len);
@@ -53,11 +53,11 @@ ReadOneChar (joy_char_t *ch, const UNICODE *str)
 static joy_char_t *
 LoadJoystickAlpha (STRING String, int *count)
 {
-	UNICODE *str;
+	UQM_UTF8_T *str;
 	int c;
 	int i;
 	joy_char_t *chars;
-	UNICODE *cur;
+	UQM_UTF8_T *cur;
 
 	*count = 0;
 	str = GetStringAddress (String);
@@ -128,8 +128,8 @@ BOOLEAN
 DoTextEntry (TEXTENTRY_STATE *pTES)
 {
 	UniChar ch;
-	UNICODE *pStr;
-	UNICODE *CacheInsPt;
+	UQM_UTF8_T *pStr;
+	UQM_UTF8_T *CacheInsPt;
 	int CacheCursorPos;
 	int len;
 	BOOLEAN changed = FALSE;
@@ -207,7 +207,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 	}
 	while (ch)
 	{
-		UNICODE chbuf[8];
+		UQM_UTF8_T chbuf[8];
 		int chsize;
 
 		pTES->JoystickMode = FALSE;
@@ -247,7 +247,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 	{
 		if (pStr > pTES->BaseStr)
 		{
-			UNICODE *prev = skipUTF8Chars (pTES->BaseStr,
+			UQM_UTF8_T *prev = skipUTF8Chars (pTES->BaseStr,
 					pTES->CursorPos - 1);
 			
 			memmove (prev, pStr, len + 1);
@@ -260,7 +260,7 @@ DoTextEntry (TEXTENTRY_STATE *pTES)
 	{
 		if (pStr > pTES->BaseStr)
 		{
-			UNICODE *prev = skipUTF8Chars (pTES->BaseStr,
+			UQM_UTF8_T *prev = skipUTF8Chars (pTES->BaseStr,
 					pTES->CursorPos - 1);
 
 			pStr = prev;

@@ -80,7 +80,7 @@ enum {
 };
 
 
-#define GAME_STRING(i) ((UNICODE *)GetStringAddress (SetAbsStringTableIndex (GameStrings, (i))))
+#define GAME_STRING(i) ((UQM_UTF8_T *)GetStringAddress (SetAbsStringTableIndex (GameStrings, (i))))
 
 extern STRING GameStrings;
 

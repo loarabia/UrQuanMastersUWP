@@ -60,7 +60,7 @@ typedef struct
 	BYTE NumShips, NumDevices;
 	BYTE ShipList[MAX_BUILT_SHIPS];
 	BYTE DeviceList[MAX_EXCLUSIVE_DEVICES];
-	UNICODE SaveName[SAVE_NAME_SIZE];
+	UQM_UTF8_T SaveName[SAVE_NAME_SIZE];
 } SUMMARY_DESC;
 
 extern ACTIVITY NextActivity;

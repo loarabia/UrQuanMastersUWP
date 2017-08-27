@@ -107,7 +107,7 @@ PrintScanTitlePC (TEXT *t, RECT *r, const char *txt, int xpos)
 }
 
 static void
-MakeScanValue (UNICODE *buf, long val, const UNICODE *extra)
+MakeScanValue (UQM_UTF8_T *buf, long val, const UQM_UTF8_T *extra)
 {
 	if (val >= 10 * 100)
 	{	// 1 decimal place
@@ -120,10 +120,10 @@ MakeScanValue (UNICODE *buf, long val, const UNICODE *extra)
 }
 
 static void
-GetPlanetTitle (UNICODE *buf, COUNT bufsize)
+GetPlanetTitle (UQM_UTF8_T *buf, COUNT bufsize)
 {
 	int val;
-	UNICODE *named = GetNamedPlanetaryBody ();
+	UQM_UTF8_T *named = GetNamedPlanetaryBody ();
 	if (named)
 	{
 		utf8StringCopy (buf, bufsize, named);
@@ -153,7 +153,7 @@ PrintCoarseScanPC (void)
 	SDWORD val;
 	TEXT t;
 	RECT r;
-	UNICODE buf[200];
+	UQM_UTF8_T buf[200];
 
 	GetPlanetTitle (buf, sizeof (buf));
 
@@ -316,7 +316,7 @@ PrintCoarseScan3DO (void)
 	SDWORD val;
 	TEXT t;
 	STAMP s;
-	UNICODE buf[200];
+	UQM_UTF8_T buf[200];
 
 	GetPlanetTitle (buf, sizeof (buf));
 
@@ -736,7 +736,7 @@ DoPickPlanetSide (MENU_STATE *pMS)
 static void
 drawLandingFuelUsage (COUNT fuel)
 {
-	UNICODE buf[100];
+	UQM_UTF8_T buf[100];
 
 	sprintf (buf, "%s%1.1f",
 			GAME_STRING (NAVIGATION_STRING_BASE + 5),

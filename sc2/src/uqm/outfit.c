@@ -76,7 +76,7 @@ DrawModuleStrings (MENU_STATE *pMS, BYTE NewModule)
 	else if (pMS->CurFrame)
 	{
 		TEXT t;
-		UNICODE buf[40];
+		UQM_UTF8_T buf[40];
 
 		s.frame = SetAbsFrameIndex (pMS->CurFrame, NewModule);
 		DrawStamp (&s);

@@ -46,7 +46,7 @@
 #include "libs/misc.h"
 
 
-static void DrawFadeText (const UNICODE *str1, const UNICODE *str2,
+static void DrawFadeText (const UQM_UTF8_T *str1, const UQM_UTF8_T *str2,
 		BOOLEAN fade_in, RECT *pRect);
 
 
@@ -310,7 +310,7 @@ InitEncounter (void)
 	}
 	else
 	{
-		UNICODE buf[256];
+		UQM_UTF8_T buf[256];
 
 		t.pStr = GAME_STRING (ENCOUNTER_STRING_BASE + 2);
 				// "ENCOUNTER AT"
@@ -408,7 +408,7 @@ InitEncounter (void)
 }
 
 static void
-DrawFadeText (const UNICODE *str1, const UNICODE *str2, BOOLEAN fade_in,
+DrawFadeText (const UQM_UTF8_T *str1, const UQM_UTF8_T *str2, BOOLEAN fade_in,
 		RECT *pRect)
 {
 	SIZE i;
@@ -501,10 +501,10 @@ UninitEncounter (void)
 		RECT scavenge_r = {{0, 0}, {0, 0}};
 		TEXT t;
 		STAMP ship_s;
-		const UNICODE *str1 = NULL;
-		const UNICODE *str2 = NULL;
+		const UQM_UTF8_T *str1 = NULL;
+		const UQM_UTF8_T *str2 = NULL;
 		StatMsgMode prevMsgMode;
-		UNICODE buf[80];
+		UQM_UTF8_T buf[80];
 		HSHIPFRAG hStarShip;
 		SHIP_FRAGMENT *FragPtr;
 		static const Color fade_ship_cycle[] =
