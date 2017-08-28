@@ -52,6 +52,9 @@ void
 log_displayBox (const /*UTF-8*/char *title, int isError,
 		const /*UTF-8*/char *msg)
 {
+	/*
+	//TODO FIXME replace with a Windows.UI.Popups.MessageDialog after you add in
+	// Cpp WinRT support.
 	LPWSTR swTitle = toWideChar (title);
 	LPWSTR swMsg = toWideChar (msg);
 	UINT uType = isError ? MB_ICONWARNING : MB_ICONINFORMATION;
@@ -63,5 +66,6 @@ log_displayBox (const /*UTF-8*/char *title, int isError,
 
 	free (swTitle);
 	free (swMsg);
+	*/
 }
 
