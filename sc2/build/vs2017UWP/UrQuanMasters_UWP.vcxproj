@@ -1121,7 +1121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\doc\users\manual.txt" />
-    <Text Include="README_BINARY_DEPENDENCIES.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\src\res\kohr-ah1.ico" />

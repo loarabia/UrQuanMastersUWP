@@ -2870,9 +2870,6 @@
     <Text Include="..\..\doc\users\manual.txt">
       <Filter>Doc\Users</Filter>
     </Text>
-    <Text Include="README_BINARY_DEPENDENCIES.txt">
-      <Filter>Resources\DLLs</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\src\res\kohr-ah1.ico">
