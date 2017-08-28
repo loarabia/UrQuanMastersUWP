@@ -1174,22 +1174,46 @@ BuyBuyBuy:
 static void
 DoSell (RESPONSE_REF R)
 {
-	BYTE num_new_rainbows;
-	UWORD rainbow_mask;
+	SBYTE num_new_rainbows;
+	UWORD rainbow_bitarray;
 	SIZE added_credit;
 	int what_to_sell_queued = 0;
 
-	rainbow_mask = MAKE_WORD (
+	/*
+	 * Rainbow worlds are kept in 10 bits of a UWORD (16 bits) in the game state.
+	 * Each rainbow world maps to a specific bit position.
+	 */
+	rainbow_bitarray = MAKE_WORD (
 			GET_GAME_STATE (RAINBOW_WORLD0),
 			GET_GAME_STATE (RAINBOW_WORLD1)
 			);
-	num_new_rainbows = (BYTE)(-GET_GAME_STATE (MELNORME_RAINBOW_COUNT));
-	while (rainbow_mask)
+
+	/*
+	 * Grabs the number of Rainbow worlds the melnorme already knows about.
+	 * It negates this value as a different way to do subtraction since the game state 
+	 * always contains the full number of rainbow worlds that the player knows about.
+	 * So imagine game state:
+	 * Player has found 8 worlds.
+	 * Player already sold data on 4 of those worlds.
+	 * The negation below makes the 4 count against the player (-4).
+	 * Then the game state is queried for the total found worlds (8).
+	 * The player is then payed for -4 + 8 = 4 worlds.
+	 * 
+	 * This code is duplicated in the function NatureOfConversation
+	 */
+	num_new_rainbows = -(SBYTE)(GET_GAME_STATE (MELNORME_RAINBOW_COUNT));
+	
+	/*
+	 * The code below grabs the bitarray and then pops off each entry one at a time
+	 * until it has emptied the entire array thus counting the total number of
+	 * rainbow worlds the player knows about.
+	 */
+	while (rainbow_bitarray)
 	{
-		if (rainbow_mask & 1)
+		if (rainbow_bitarray & 1)
 			++num_new_rainbows;
 
-		rainbow_mask >>= 1;
+		rainbow_bitarray >>= 1;
 	}
 
 	if (!PLAYER_SAID (R, sell))
@@ -1287,8 +1311,8 @@ DoSell (RESPONSE_REF R)
 static void
 NatureOfConversation (RESPONSE_REF R)
 {
-	BYTE num_new_rainbows;
-	UWORD rainbow_mask;
+	SBYTE num_new_rainbows;
+	UWORD rainbow_bitarray;
 	COUNT Credit;
 
 	if (PLAYER_SAID (R, get_on_with_business))
@@ -1309,17 +1333,17 @@ NatureOfConversation (RESPONSE_REF R)
 		SET_GAME_STATE (MELNORME_YACK_STACK2, stack + 5);
 	}
 
-	rainbow_mask = MAKE_WORD (
+	rainbow_bitarray = MAKE_WORD (
 			GET_GAME_STATE (RAINBOW_WORLD0),
 			GET_GAME_STATE (RAINBOW_WORLD1)
 			);
-	num_new_rainbows = (BYTE)(-GET_GAME_STATE (MELNORME_RAINBOW_COUNT));
-	while (rainbow_mask)
+	num_new_rainbows = -(SBYTE)(GET_GAME_STATE (MELNORME_RAINBOW_COUNT));
+	while (rainbow_bitarray)
 	{
-		if (rainbow_mask & 1)
+		if (rainbow_bitarray & 1)
 			++num_new_rainbows;
 
-		rainbow_mask >>= 1;
+		rainbow_bitarray >>= 1;
 	}
 
 	if (GLOBAL_SIS (FuelOnBoard) > 0
