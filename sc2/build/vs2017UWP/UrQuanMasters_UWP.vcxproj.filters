@@ -337,6 +337,9 @@
     <Filter Include="Resources\DLLs">
       <UniqueIdentifier>{6bcdbf29-e8a4-4846-9987-0003577bd8cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{3b142c4d-9997-4306-aa30-03a24db8f110}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\getopt\getopt.c">
@@ -1501,6 +1504,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\SDL2\src\main\winrt\SDL_winrt_main_NonXAML.cpp" />
+    <ClCompile Include="..\..\src\options.c" />
+    <ClCompile Include="..\..\src\port.c" />
+    <ClCompile Include="..\..\src\uqm.c" />
     <ClCompile Include="..\..\src\options.c" />
     <ClCompile Include="..\..\src\port.c" />
     <ClCompile Include="..\..\src\uqm.c" />
@@ -3013,6 +3019,18 @@
     <None Include="..\..\src\config_win.h.in" />
     <None Include="..\..\src\Makeinfo" />
     <None Include="..\..\..\..\SDL2\src\main\winrt\SDL2-WinRTResource_BlankCursor.cur" />
+    <None Include="..\..\content\uqm.key">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="..\..\content\uqm.rmp">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="..\..\content\version">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="..\..\content\menu.key">
+      <Filter>Content</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\..\..\vcpkg\installed\x86-windows\lib\zlib.lib" />

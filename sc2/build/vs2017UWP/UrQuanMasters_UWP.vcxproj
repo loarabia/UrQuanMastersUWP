@@ -151,7 +151,7 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_VW=320;_VH=240;GFXMODULE_SDL;THREADLIB_SDL;HAVE_OPENAL;HAVE_ZIP;HAVE_JOYSTICK;NETPLAY=0;ZLIB_DLL;USE_INTERNAL_MIKMOD;USE_INTERNAL_LUA;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>APPX;NDEBUG;WIN32;_CONSOLE;_VW=320;_VH=240;GFXMODULE_SDL;THREADLIB_SDL;HAVE_OPENAL;HAVE_ZIP;HAVE_JOYSTICK;NETPLAY=0;ZLIB_DLL;USE_INTERNAL_MIKMOD;USE_INTERNAL_LUA;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -219,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <AppxPackagePayload Include="deps/$(Configuration)/$(Platform)/*.dll" TargetPath="%(Filename)%(Extension)" />
+    <AppxPackagePayload Include="Content/**/*" TargetPath="%(RelativeDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\SDL2\VisualC-WinRT\UWP_VS2015\SDL-UWP.vcxproj">

@@ -214,6 +214,7 @@ static void saveError (const char *fmt, ...)
 
 static int parseOptions (int argc, char *argv[],
 		struct options_struct *options);
+static int parseOptions_appx(struct options_struct *options);
 static void getUserConfigOptions (struct options_struct *options);
 static void usage (FILE *out, const struct options_struct *defaultOptions);
 static int parseIntOption (const char *str, int *result,
@@ -271,11 +272,16 @@ main (int argc, char *argv[])
 	int gfxFlags;
 	int i;
 
+#ifdef APPX
+	// Building a UWP -- you cannot pass commandline parameter. 
+	// Things like content and config files have to be in the app package already
+	optionsResult = parseOptions_appx;
+#else
 	// NOTE: we cannot use the logging facility yet because we may have to
 	//   log to a file, and we'll only get the log file name after parsing
 	//   the options.
 	optionsResult = parseOptions (argc, argv, &options);
-
+#endif
 	log_init (15);
 
 	if (options.logFile != NULL)
@@ -822,6 +828,18 @@ setVolumeOption (struct float_option *option, const char *strval,
 	option->set = true;
 	return true;
 }
+
+#ifdef APPX
+static int 
+parseOptions_appx(struct options_struct *options)
+{
+	// All of these should be deployed with the APPX package
+	options->configDir = NULL;
+	options->contentDir = NULL;
+	options->logFile = NULL;
+	return EXIT_SUCCESS;
+}
+#endif
 
 static int
 parseOptions (int argc, char *argv[], struct options_struct *options)
