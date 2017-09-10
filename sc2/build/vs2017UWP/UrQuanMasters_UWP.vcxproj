@@ -219,7 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <AppxPackagePayload Include="deps/$(Configuration)/$(Platform)/*.dll" TargetPath="%(Filename)%(Extension)" />
-    <AppxPackagePayload Include="Content/**/*" TargetPath="%(RelativeDir)%(Filename)%(Extension)" />
+    <AppxPackagePayload Include="../../content/**/*" TargetPath="Content/%(AppxPackagePayload.RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\SDL2\VisualC-WinRT\UWP_VS2015\SDL-UWP.vcxproj">
