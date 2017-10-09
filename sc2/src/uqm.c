@@ -271,11 +271,10 @@ main (int argc, char *argv[])
 	int gfxDriver;
 	int gfxFlags;
 	int i;
-
 #ifdef APPX
 	// Building a UWP -- you cannot pass commandline parameter. 
 	// Things like content and config files have to be in the app package already
-	optionsResult = parseOptions_appx;
+	optionsResult = parseOptions_appx(&options);
 #else
 	// NOTE: we cannot use the logging facility yet because we may have to
 	//   log to a file, and we'll only get the log file name after parsing
@@ -398,7 +397,11 @@ main (int argc, char *argv[])
 	speechVolumeScale = options.speechVolumeScale.value;
 	optAddons = options.addons;
 
-	prepareContentDir (options.contentDir, options.addonDir, argv[0]);
+	char *execFile = "";
+	if (argv != NULL) {
+		execFile = argv[0];
+	}
+	prepareContentDir (options.contentDir, options.addonDir, execFile);
 	prepareMeleeDir ();
 	prepareSaveDir ();
 	prepareShadowAddons (options.addons);
@@ -835,6 +838,7 @@ parseOptions_appx(struct options_struct *options)
 {
 	// All of these should be deployed with the APPX package
 	options->configDir = NULL;
+	options->configDir = win_getPackageDir();
 	options->contentDir = NULL;
 	options->logFile = NULL;
 	return EXIT_SUCCESS;

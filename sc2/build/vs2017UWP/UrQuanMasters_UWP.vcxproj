@@ -219,7 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <AppxPackagePayload Include="deps/$(Configuration)/$(Platform)/*.dll" TargetPath="%(Filename)%(Extension)" />
-    <AppxPackagePayload Include="../../content/**/*" TargetPath="Content/%(AppxPackagePayload.RecursiveDir)%(Filename)%(Extension)"/>
+    <AppxPackagePayload Include="../../content/**/*" TargetPath="Content/%(AppxPackagePayload.RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\SDL2\VisualC-WinRT\UWP_VS2015\SDL-UWP.vcxproj">
@@ -243,6 +243,7 @@
     <ClCompile Include="..\..\src\uqm.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="win_package.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\..\SDL2\src\main\winrt\SDL2-WinRTResources.rc" />
@@ -1084,6 +1085,7 @@
     <ClInclude Include="..\..\src\uqm\util.h" />
     <ClInclude Include="..\..\src\uqm\velocity.h" />
     <ClInclude Include="..\..\src\uqm\weapon.h" />
+    <ClInclude Include="win_package.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\BUGS" />
