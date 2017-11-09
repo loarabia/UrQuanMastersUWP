@@ -297,6 +297,22 @@ main (int argc, char *argv[])
 		for (i = 0; i < argc; ++i)
 			log_add (log_User, "argv[%d] = [%s]", i, argv[i]);
 	}
+#ifdef APPX
+	const char *logFileName = win_getLogFile();
+	if (!freopen(logFileName, "w", stderr))
+	{
+		printf("Error %d calling freopen() on stderr\n", errno);
+		return EXIT_FAILURE;
+	}
+
+	if (!freopen(logFileName, "w", stdout))
+	{
+		printf("Error %d calling freopen() on stdout\n", errno);
+		return EXIT_FAILURE;
+	}
+	log_setLevel(log_All);
+#endif // APPX
+
 
 	if (options.runMode == runMode_version)
 	{
@@ -402,9 +418,9 @@ main (int argc, char *argv[])
 		execFile = argv[0];
 	}
 	prepareContentDir (options.contentDir, options.addonDir, execFile);
-	prepareMeleeDir ();
-	prepareSaveDir ();
-	prepareShadowAddons (options.addons);
+	//prepareMeleeDir ();
+	//prepareSaveDir ();
+	//prepareShadowAddons (options.addons);
 #if 0
 	initTempDir ();
 #endif
@@ -825,7 +841,7 @@ setVolumeOption (struct float_option *option, const char *strval,
 {
 	int intVol;
 	
-	if (parseIntOption (strval, &intVol, optName) != 0)
+	if (parseIntOption (strval, &intVol, optName) != 0
 		return false;
 	parseIntVolume (intVol, &option->value);
 	option->set = true;
@@ -841,6 +857,9 @@ parseOptions_appx(struct options_struct *options)
 	options->configDir = win_getPackageDir();
 	options->contentDir = NULL;
 	options->logFile = NULL;
+	options->addons = HMalloc(1 * sizeof(const char *));
+	options->addons[0] = NULL;
+	options->numAddons = 0;
 	return EXIT_SUCCESS;
 }
 #endif
