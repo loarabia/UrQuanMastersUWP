@@ -4,8 +4,8 @@
 #include <iostream>
 
 using namespace winrt;
-//using namespace Windows::Storage;
 using namespace Windows::ApplicationModel;
+using namespace Windows::Storage;
 
 //const std::wstring make_logfilepath() {
 //	std::wstring wDirPath(ApplicationData::Current->LocalFolder->Path->Data());
@@ -14,8 +14,6 @@ using namespace Windows::ApplicationModel;
 //	wDirPath.append(L"\0");
 //	return wDirPath;
 //}
-
-
 
 extern "C" {
 
@@ -26,7 +24,35 @@ extern "C" {
 		std::string strTo(size_needed, 0);
 		WideCharToMultiByte(CP_UTF8, 0, &wPackageFolder[0], (int)wPackageFolder.size(), &strTo[0], size_needed, NULL, NULL);
 		char * result = new char[size_needed];
-		strTo.copy(result, size_needed, 0);
+		strTo._Copy_s(result, size_needed, size_needed, 0);
+		//strTo.copy(result, size_needed, 0);
+		result[size_needed] = '\0';
+		return result;
+	}
+
+	const char * const win_getLocalAppDataDir() {
+		std::wstring wLocalAppDataFolder = ApplicationData::Current().LocalFolder().Path().data();
+
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wLocalAppDataFolder[0], (int)wLocalAppDataFolder.size(), NULL, 0, NULL, NULL);
+		std::string strTo(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &wLocalAppDataFolder[0], (int)wLocalAppDataFolder.size(), &strTo[0], size_needed, NULL, NULL);
+		char * result = new char[size_needed];
+		strTo._Copy_s(result, size_needed, size_needed, 0);
+		result[size_needed] = '\0';
+		return result;
+	}
+
+	const char * const win_getLogFile() {
+		std::wstring wDirPath(ApplicationData::Current().LocalFolder().Path().data());
+		wDirPath.append(L"\\");
+		wDirPath.append(L"LogFile.txt");
+		wDirPath.append(L"\0");
+
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wDirPath[0], (int)wDirPath.size(), NULL, 0, NULL, NULL);
+		std::string strTo(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &wDirPath[0], (int)wDirPath.size(), &strTo[0], size_needed, NULL, NULL);
+		char * result = new char[size_needed];
+		strTo._Copy_s(result, size_needed, size_needed, 0);
 		result[size_needed] = '\0';
 		return result;
 	}

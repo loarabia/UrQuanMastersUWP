@@ -4,10 +4,14 @@
 #include "winrt/Windows.Foundation.h"
 #include "winrt/Windows.Storage.h"
 #include "winrt/Windows.ApplicationModel.h"
+#include "winrt/Windows.Storage.h"
 
 #ifdef __cplusplus
 extern "C" {
 	const char * const win_getPackageDir();
+	const char * const win_getLocalAppDataDir();
+	const char * const win_getLogFile();
+
 	//const wchar_t * const win_getdirname();
 	//const wchar_t * const win_getLocalDirPath();
 
