@@ -1591,6 +1591,9 @@
     <ClCompile Include="win_package.cpp">
       <Filter>Source Files\windows_libs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\options.c" />
+    <ClCompile Include="..\..\src\port.c" />
+    <ClCompile Include="..\..\src\uqm.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\getopt\getopt.h">
