@@ -372,6 +372,11 @@ stdio_getPDirEntryHandle(const uio_PDirHandle *pDirHandle, const char *name) {
 	if (pDirHandle->extra->extra->upDir == NULL) {
 		// Top dir. Contains only drive letters and UNC \\server\share
 		// parts.
+#ifdef APPX
+		if (true) {
+			// leave NAME alone
+		} else
+#endif // APPX
 #ifdef HAVE_DRIVE_LETTERS
 		if (isDriveLetter(name[0]) && name[1] == ':' && name[2] == '\0') {
 			driveName[0] = tolower(name[0]);

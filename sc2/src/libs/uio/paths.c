@@ -43,9 +43,39 @@ getFirstPathComponent(const char *dir, const char *dirEnd,
 		*endComp = *startComp;
 		return;
 	}
+#ifdef APPX
+	// We're going to treat the full path up to the APPX PackageRoot like one giant Drive letter.
+	// Fact is, if the code makes it this far, then this path *MUST EXIST* and you cannot access anything above it
+	char finalPath[PATH_MAX];
+
+	char *packageroot = win_getPackageDir();
+	char *packageUnixPath = dosToUnixPath(packageroot);
+	size_t pkgrootlen = strlen(packageUnixPath);
+
+	char *localAppData = win_getLocalAppDataDir();
+	char *localAppDataUnixPath = dosToUnixPath(localAppData);
+	size_t localAppDatalen = strlen(packageUnixPath);
+
+	// otherwise let the path pass through unchanged.
+	// this is because this function handles relative and absolute paths
+	bool foundPackageRoot = _strnicmp(*startComp, packageUnixPath, pkgrootlen) == 0;
+	bool foundLocalAppData = _strnicmp(*startComp, localAppDataUnixPath, localAppDatalen) == 0;
+
+	if (foundPackageRoot) {
+		*endComp = *startComp + pkgrootlen;
+		return;
+	}
+
+	if (foundLocalAppData) {
+		*endComp = *startComp + localAppDatalen;
+		return;
+	}
+#endif
+
 	*endComp = memchr(*startComp, '/', dirEnd - *startComp);
 	if (*endComp == NULL)
 		*endComp = dirEnd;
+
 }
 
 // gets the first dir component of a path
