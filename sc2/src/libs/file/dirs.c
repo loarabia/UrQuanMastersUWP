@@ -78,6 +78,22 @@ mkdirhier (const char *path)
 	ptr = buf;
 	pathstart = path;
 
+#ifdef APPX
+	if(true){
+		// Don't stat or in any other way attempt to make directories for 
+		// paths outside of the AppX folder.
+		char *packageroot = win_getPackageDir();
+		packageroot = dosToUnixPath(packageroot);
+		size_t pkgrootlen = strlen(packageroot);
+		if ( (len == pkgrootlen) && (strcmp(packageroot, path) == 0) ) {
+			goto success;
+		}
+		// the paths differ in some way so let the algorithm build the rest
+		pathstart += pkgrootlen;
+	}
+	else
+#endif // APPX
+
 #ifdef HAVE_DRIVE_LETTERS
 	if (isDriveLetter(pathstart[0]) && pathstart[1] == ':')
 	{
