@@ -202,6 +202,8 @@ log_addV (log_Level level, const char *fmt, va_list list)
 		slot = acquireSlot ();
 		memcpy (queue[slot], full_msg, sizeof (queue[0]));
 	}
+
+	fflush(streamOut);
 }
 
 void
@@ -234,7 +236,7 @@ log_add_nothreadV (log_Level level, const char *fmt, va_list list)
 		memcpy (msgNoThread, full_msg, sizeof (msgNoThread));
 		noThreadReady = true;
 	}
-}
+ }
 
 void
 log_add_nothread (log_Level level, const char *fmt, ...)
