@@ -59,123 +59,71 @@ createDirectory(const char *dir, int mode)
 	return MKDIR(dir, mode);
 }
 
-// make all components of the path if they don't exist already
-// returns 0 on success, -1 on failure.
-// on failure, some parts may still have been created.
+/*
+ * Makes all of the parts of the path if they don't exist already.
+ * returns 0 on success and -1 on failure.
+ * on failure, some parts may have been created already.
+ *
+ * e.g. imagine a path is passed in like:
+ * /Users/Bob/Foo/Bar/Baz
+ *
+ * Now, imagine that Bar and Baz don't exist.
+ * This function will walk starting at root and stat in turn,
+ * / , /Users, /Users/Bob, and /Users/Bob/Foo and see they exist.
+ * It will fail to find Bar and will try to Create a Directory for it under Foo.
+ * 
+ * Now Baz also shouldn't exist. If Bar didn't exist how can Baz be inside it?
+ * So now imagine that the OS tries to create Baz. If it succeeds, then all the parts have been created 
+ * and we return 0.
+ * 
+ * Now imagine for some reason, that the OS couldn't create Baz. In that case, the algorithm has created 
+ * and Bar and returns a -1. So you have created some of the requested hierarchy.
+ */
 int
 mkdirhier (const char *path)
 {
-	char *buf;              // buffer
-	char *ptr;              // end of the string in buf
-	const char *pathstart;  // start of a component of path
-	const char *pathend;    // first char past the end of a component of path
-	size_t len;
+	bool somePathPartsAreNotChecked = true;
+	
+	char *partStart = NULL;
+	const char *partEnd = NULL;
+
+	char *subpath = NULL;
+	size_t subpathLength = -1;
+
 	struct stat statbuf;
-	
-	len = strlen (path);
-	buf = HMalloc (len + 2);  // one extra for possibly added '/'
 
-	ptr = buf;
-	pathstart = path;
-
-#ifdef APPX
-	if(true){
-		// Don't stat or in any other way attempt to make directories for 
-		// paths outside of the AppX folder.
-		char *packageroot = win_getPackageDir();
-		packageroot = dosToUnixPath(packageroot);
-		size_t pkgrootlen = strlen(packageroot);
-		if ( (len == pkgrootlen) && (strcmp(packageroot, path) == 0) ) {
-			goto success;
-		}
-		// the paths differ in some way so let the algorithm build the rest
-		pathstart += pkgrootlen;
-	}
-	else
-#endif // APPX
-
-#ifdef HAVE_DRIVE_LETTERS
-	if (isDriveLetter(pathstart[0]) && pathstart[1] == ':')
-	{
-		// Driveletter + semicolon on Windows.
-		// Copy as is; don't try to create directories for it.
-		*(ptr++) = *(pathstart++);
-		*(ptr++) = *(pathstart++);
-
-		ptr[0] = '/';
-		ptr[1] = '\0';
-		if (stat (buf, &statbuf) == -1)
-		{
-			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
-			goto err;
-		}
-	}
-	else
-#endif  /* HAVE_DRIVE_LETTERS */
-#ifdef HAVE_UNC_PATHS
-	if (pathstart[0] == '\\' && pathstart[1] == '\\')
-	{
-		// Universal Naming Convention path. (\\server\share\...)
-		// Copy the server part as is; don't try to create directories for
-		// it, or stat it. Don't create a dir for the share either.
-		*(ptr++) = *(pathstart++);
-		*(ptr++) = *(pathstart++);
-
-		// Copy the server part
-		while (*pathstart != '\0' && *pathstart != '\\' && *pathstart != '/')
-			*(ptr++) = *(pathstart++);
-		
-		if (*pathstart == '\0')
-		{
-			log_add (log_Error, "Incomplete UNC path \"%s\"", pathstart);
-			goto err;
-		}
-
-		// Copy the path seperator.
-		*(ptr++) = *(pathstart++);
-	
-		// Copy the share part
-		while (*pathstart != '\0' && *pathstart != '\\' && *pathstart != '/')
-			*(ptr++) = *(pathstart++);
-
-		ptr[0] = '/';
-		ptr[1] = '\0';
-		if (stat (buf, &statbuf) == -1)
-		{
-			log_add (log_Error, "Can't stat \"%s\": %s", buf, strerror (errno));
-			goto err;
-		}
-	}
-#else
-	{
-		// Making sure that there is an 'else' case if HAVE_DRIVE_LETTERS is
-		// defined.
-	}
-#endif  /* HAVE_UNC_PATHS */
-
-	if (*pathstart == '/')
-		*(ptr++) = *(pathstart++);
-
-	if (*pathstart == '\0') {
-		// path exists completely, nothing more to do
-		goto success;
+	// Guard against NULL. Nothing should be NULL so throw this in the 
+	// developer's face during development instead of allowing an unchecked result.
+	assert(path != NULL);
+	if (path == NULL) {
+		return EXIT_FAILURE;
 	}
 
-	// walk through the path as long as the components exist
-	while (1)
-	{
-		pathend = strchr (pathstart, '/');
-		if (pathend == NULL)
-			pathend = path + len;
-		memcpy(ptr, pathstart, pathend - pathstart);
-		ptr += pathend - pathstart;
-		*ptr = '\0';
-		
-		if (stat (buf, &statbuf) == -1)
-		{
-			if (errno == ENOENT)
-				break;
-#ifdef __SYMBIAN32__
+	//Guard against empty strings "" which must exist
+	// Treat like null path?
+	if (strlen(path) == 0 ) {
+		return EXIT_SUCCESS;
+	}
+
+ 	getFirstPathComponent(path, path + strlen(path), &partStart, &partEnd);
+	partEnd = partEnd + 1; // getFirstPathComponent doesn't return the '/' so we're going to add it.
+	subpathLength = partEnd - path;
+	subpath = malloc(subpathLength + 1); //+1 for '\0'
+	memcpy(subpath, partStart, partEnd - partStart);
+	subpath[subpathLength] = '\0';
+
+	// Walk the path directory by directory checking to see if a file exists. 
+	// If it doesn't, create it.
+	do {
+
+		if (stat(subpath, &statbuf) == -1) {
+			if (errno == ENOENT) {
+				if (createDirectory(subpath, 0777) == -1) {
+					log_add (log_Error, "Error: Can't create %s: %s", subpath, strerror (errno));
+					goto err;
+				}
+			}
+			#ifdef __SYMBIAN32__
 			// XXX: HACK: If we don't have access to a directory, we can
 			// still have access to the underlying entries. We don't
 			// actually know whether the entry is a directory, but I know of
@@ -184,71 +132,35 @@ mkdirhier (const char *path)
 			// the directory. That /should/ not be a problem, as any such
 			// action should have its own error checking.
 			if (errno != EACCES)
-#endif			
+			#endif			
 			{
-				log_add (log_Error, "Can't stat \"%s\": %s", buf,
-						strerror (errno));
-				goto err;
+				log_add (log_Error, "Can't stat \"%s\": %s", subpath, strerror (errno));
+					goto err;
 			}
 		}
-		
-		if (*pathend == '\0')
-			goto success;
+		partStart = path + strlen(subpath);
+		free(subpath);
 
-		*ptr = '/';
-		ptr++;
-		pathstart = pathend + 1;
-		while (*pathstart == '/')
-			pathstart++;
-		// pathstart is the next non-slash character
+		if (partEnd == (path + strlen(path))) { somePathPartsAreNotChecked = false; }
+		getNextPathComponentFromFullPath(path, path + strlen(path), partStart, &partEnd);
 
-		if (*pathstart == '\0')
-			goto success;
-	}
-	
-	// create all components left
-	while (1)
-	{
-		if (createDirectory (buf, 0777) == -1)
-		{
-			log_add (log_Error, "Error: Can't create %s: %s", buf,
-					strerror (errno));
-			goto err;
-		}
+		subpathLength = partEnd - path + 1; //+1 for '\0'
+		subpath = malloc(subpath, subpathLength);
+		memcpy(subpath, path, subpathLength);
+		subpath[subpathLength] = '\0';
 
-		if (*pathend == '\0')
-			break;
-
-		*ptr = '/';
-		ptr++;
-		pathstart = pathend + 1;
-		while (*pathstart == '/')
-			pathstart++;
-		// pathstart is the next non-slash character
-
-		if (*pathstart == '\0')
-			break;
-
-		pathend = strchr (pathstart, '/');
-		if (pathend == NULL)
-			pathend = path + len;
-		
-		memcpy (ptr, pathstart, pathend - pathstart);
-		ptr += pathend - pathstart;
-		*ptr = '\0';
-	}
+	} while (somePathPartsAreNotChecked);
 
 success:
-	HFree (buf);
-	return 0;
-
+	free(subpath);
+	return EXIT_SUCCESS;
 err:
 	{
 		int savedErrno = errno;
-		HFree (buf);
 		errno = savedErrno;
 	}
-	return -1;
+	free(subpath);
+	return EXIT_FAILURE;
 }
 
 // Get the user's home dir

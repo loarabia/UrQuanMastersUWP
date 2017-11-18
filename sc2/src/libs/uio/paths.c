@@ -54,7 +54,7 @@ getFirstPathComponent(const char *dir, const char *dirEnd,
 
 	char *localAppData = win_getLocalAppDataDir();
 	char *localAppDataUnixPath = dosToUnixPath(localAppData);
-	size_t localAppDatalen = strlen(packageUnixPath);
+	size_t localAppDatalen = strlen(localAppDataUnixPath);
 
 	// otherwise let the path pass through unchanged.
 	// this is because this function handles relative and absolute paths
@@ -114,6 +114,18 @@ getNextPathComponent(const char *dirEnd,
 	*endComp = memchr(*startComp, '/', dirEnd - *startComp);
 	if (*endComp == NULL)
 		*endComp = dirEnd;
+}
+
+void
+getNextPathComponentFromFullPath(const char *bufferStart,
+	const char *bufferEnd, const char *startPart, 
+	const char **out_endPart) {
+	//assert(*startPart == '/');
+
+	*out_endPart = memchr(startPart, '/', bufferEnd - startPart);
+	if (*out_endPart == NULL) {
+		*out_endPart = bufferEnd;
+	}
 }
 
 // gets the next component of a path
