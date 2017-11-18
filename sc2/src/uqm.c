@@ -418,7 +418,7 @@ main (int argc, char *argv[])
 		execFile = argv[0];
 	}
 	prepareContentDir (options.contentDir, options.addonDir, execFile);
-	//prepareMeleeDir ();
+	prepareMeleeDir ();
 	//prepareSaveDir ();
 	//prepareShadowAddons (options.addons);
 #if 0
@@ -841,7 +841,7 @@ setVolumeOption (struct float_option *option, const char *strval,
 {
 	int intVol;
 	
-	if (parseIntOption (strval, &intVol, optName) != 0
+	if (parseIntOption (strval, &intVol, optName) != 0)
 		return false;
 	parseIntVolume (intVol, &option->value);
 	option->set = true;
@@ -854,7 +854,7 @@ parseOptions_appx(struct options_struct *options)
 {
 	// All of these should be deployed with the APPX package
 	options->configDir = NULL;
-	options->configDir = win_getPackageDir();
+	options->configDir = win_getLocalAppDataDir();
 	options->contentDir = NULL;
 	options->logFile = NULL;
 	options->addons = HMalloc(1 * sizeof(const char *));

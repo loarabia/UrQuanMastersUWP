@@ -289,7 +289,12 @@ prepareMeleeDir (void) {
 	char buf[PATH_MAX];
 	const char *meleeDirName;
 
+#ifdef APPX
+	meleeDirName = win_getMeleeDir();
+#else
 	meleeDirName = getenv("UQM_MELEE_DIR");
+#endif // APPX
+	
 	if (meleeDirName == NULL)
 		meleeDirName = MELEEDIR;
 	

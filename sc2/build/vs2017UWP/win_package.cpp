@@ -57,6 +57,20 @@ extern "C" {
 		return result;
 	}
 
+	const char * const win_getMeleeDir() {
+		std::wstring wDirPath(ApplicationData::Current().LocalFolder().Path().data());
+		wDirPath.append(L"\\");
+		wDirPath.append(L"teams");
+		wDirPath.append(L"\0");
+
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wDirPath[0], (int)wDirPath.size(), NULL, 0, NULL, NULL);
+		std::string strTo(size_needed, 0);
+		WideCharToMultiByte(CP_UTF8, 0, &wDirPath[0], (int)wDirPath.size(), &strTo[0], size_needed, NULL, NULL);
+		char * result = new char[size_needed];
+		strTo._Copy_s(result, size_needed, size_needed, 0);
+		result[size_needed] = '\0';
+		return result;
+	}
 	//const wchar_t * const win_getdirname() {
 
 	//	auto current_package = Package::Current;
