@@ -30,25 +30,6 @@ MAKE_HOT_SPOT (COORD x, COORD y)
 	return hs;
 }
 
-// XXX: INTERNAL_PRIMITIVE and INTERNAL_PRIM_DESC are not used
-typedef union
-{
-	POINT Point;
-	STAMP Stamp;
-	BRESENHAM_LINE Line;
-	TEXT Text;
-	RECT Rect;
-} INTERNAL_PRIM_DESC;
-
-typedef struct
-{
-	PRIM_LINKS Links;
-	GRAPHICS_PRIM Type;
-	Color Color;
-	INTERNAL_PRIM_DESC Object;
-} INTERNAL_PRIMITIVE;
-
-
 // pValidRect or origin may be NULL
 BOOLEAN
 GetContextValidRect (RECT *pValidRect, POINT *origin)
