@@ -155,6 +155,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -448,10 +449,10 @@
     <ClCompile Include="..\..\src\libs\video\videodec.c" />
     <ClCompile Include="..\..\src\libs\video\vidplayer.c" />
     <ClCompile Include="..\..\src\libs\video\vresins.c" />
-    <ClCompile Include="..\..\src\options.c" />
-    <ClCompile Include="..\..\src\port.c" />
+    <!--<ClCompile Include="..\..\src\options.c" />-->
+    <!--<ClCompile Include="..\..\src\port.c" />-->
     <ClCompile Include="..\..\src\regex\regex.c" />
-    <ClCompile Include="..\..\src\uqm.c" />
+    <!--<ClCompile Include="..\..\src\uqm.c" />-->
     <ClCompile Include="..\..\src\uqm\battle.c" />
     <ClCompile Include="..\..\src\uqm\battlecontrols.c" />
     <ClCompile Include="..\..\src\uqm\border.c" />
