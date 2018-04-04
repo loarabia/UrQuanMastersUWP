@@ -860,6 +860,9 @@ parseOptions_appx(struct options_struct *options)
 	options->addons = HMalloc(1 * sizeof(const char *));
 	options->addons[0] = NULL;
 	options->numAddons = 0;
+	options->resolution.height = 800;
+	options->resolution.width = 1280;
+
 	return EXIT_SUCCESS;
 }
 #endif

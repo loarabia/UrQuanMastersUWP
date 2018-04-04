@@ -39,7 +39,8 @@ SCALE_(Nearest) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 	const int sp = src->pitch, dp = dst->pitch;
 	const int bpp = dst->format->BytesPerPixel;
 	const int slen = sp / bpp, dlen = dp / bpp;
-	const int dsrc = slen-rw, ddst = (dlen-rw) * 2;
+	//const int dsrc = slen-rw, ddst = (dlen-rw) * 2;
+	const int dsrc = slen-rw, ddst = (dlen-rw) * 4;
 
 	Uint32 *src_p = (Uint32 *)src->pixels;
 	Uint32 *dst_p = (Uint32 *)dst->pixels;
@@ -52,8 +53,8 @@ SCALE_(Nearest) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 	// move ptrs to the first updated pixel
 	src_p += slen * r->y + r->x;
-	dst_p += (dlen * r->y + r->x) * 2;
-
+	//dst_p += (dlen * r->y + r->x) * 2;
+	dst_p += (dlen * r->y + r->x) * 4;
 #if defined(MMX_ASM) && defined(MSVC_ASM)
 	// Just about everything has to be done in asm for MSVC
 	// to actually take advantage of asm here
@@ -186,16 +187,47 @@ SCALE_(Nearest) (SDL_Surface *src, SDL_Surface *dst, SDL_Rect *r)
 
 #else
 	// Plain C version
+	//for (y = 0; y < rh; ++y)
+	//{
+	//	int x;
+	//	for (x = 0; x < rw; ++x, ++src_p, dst_p += 2)
+	//	{
+	//		Uint32 pix = *src_p;
+	//		dst_p[0] = pix;
+	//		dst_p[1] = pix;
+	//		dst_p[dlen] = pix;
+	//		dst_p[dlen + 1] = pix;
+	//	}
+	//	dst_p += ddst;
+	//	src_p += dsrc;
+	//}
+
 	for (y = 0; y < rh; ++y)
 	{
 		int x;
-		for (x = 0; x < rw; ++x, ++src_p, dst_p += 2)
+		for (x = 0; x < rw; ++x, ++src_p, dst_p += 4)
 		{
 			Uint32 pix = *src_p;
+
 			dst_p[0] = pix;
 			dst_p[1] = pix;
+			dst_p[2] = pix;
+			dst_p[3] = pix;
+
 			dst_p[dlen] = pix;
 			dst_p[dlen + 1] = pix;
+			dst_p[dlen + 2] = pix;
+			dst_p[dlen + 3] = pix;
+
+			dst_p[dlen * 2] = pix;
+			dst_p[dlen * 2 + 1] = pix;
+			dst_p[dlen * 2 + 2] = pix;
+			dst_p[dlen * 2 + 3] = pix;
+
+			dst_p[dlen * 3] = pix;
+			dst_p[dlen * 3 + 1] = pix;
+			dst_p[dlen * 3 + 2] = pix;
+			dst_p[dlen * 3 + 3] = pix;
 		}
 		dst_p += ddst;
 		src_p += dsrc;

@@ -119,8 +119,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	else
 	{
 		videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 640;
-		ScreenHeightActual = 480;
+		ScreenWidthActual = 640 * 4;
+		ScreenHeightActual = 480 * 4;
 		graphics_backend = &pure_scaled_backend;
 
 		if (width != 640 || height != 480)
@@ -135,14 +135,21 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	/* We'll ask for a 32bpp frame, but it doesn't really matter, because we've set
 	   SDL_ANYFORMAT */
 
+	videomode_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+
 	SDL_MainWindow = SDL_CreateWindow("UQM",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		ScreenWidthActual, ScreenHeightActual,
 		videomode_flags);
 
-	SDL_Video = SDL_GetWindowSurface(SDL_MainWindow);
 	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, SDL_RENDERER_SOFTWARE);
+	if (SDL_ScreenRenderer == NULL) {
+		const char * sdl_error = SDL_GetError();
+	}
+
+	SDL_Video = SDL_GetWindowSurface(SDL_MainWindow);
+
 	if (SDL_Video == NULL)
 	{
 		log_add (log_Error, "Couldn't set %ix%i video mode: %s",
@@ -375,10 +382,10 @@ TFB_Pure_Scaled_Postprocess (void)
 	SDL_UnlockSurface (backbuffer);
 	SDL_UnlockSurface (scalebuffer);
 
-	updated.x *= 2;
-	updated.y *= 2;
-	updated.w *= 2;
-	updated.h *= 2;
+	updated.x *= 4;
+	updated.y *= 4;
+	updated.w *= 4;
+	updated.h *= 4;
 	if (scalebuffer != SDL_Video)
 		SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
 
