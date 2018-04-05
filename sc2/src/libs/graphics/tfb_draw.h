@@ -20,7 +20,6 @@
 #define TFB_DRAW_H
 
 #include "libs/threadlib.h"
-#include SDL_INCLUDE(SDL.h)
 
 typedef void *TFB_Canvas;
 
@@ -34,8 +33,6 @@ typedef enum {
 
 #include "libs/graphics/gfx_common.h"
 #include "libs/graphics/cmap.h"
-
-typedef SDL_Surface *TFB_Canvas;
 
 typedef struct tfb_image
 {
