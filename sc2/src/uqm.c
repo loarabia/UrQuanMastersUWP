@@ -417,6 +417,7 @@ main (int argc, char *argv[])
 	}
 	prepareContentDir (options.contentDir, options.addonDir, execFile);
 	prepareMeleeDir ();
+	//TODO FIXME
 	//prepareSaveDir ();
 	//prepareShadowAddons (options.addons);
 #if 0
