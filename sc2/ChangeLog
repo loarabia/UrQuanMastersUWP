@@ -56,6 +56,7 @@ Changes towards version 0.8:
 - Spelling and punctuation pass (bug #1200), from Anthony J. Bentley
 - New Man Page edition of the user manual (Bug #1204), from Bentley
 - STAR CONTROL trademark information updated to reflect current events (#1201)
+- Remove all support for scanlines - LO
 
 0.7.0:
 - Build with debug info in strict-debug mode (bug #1127), from Scott A. Colcord

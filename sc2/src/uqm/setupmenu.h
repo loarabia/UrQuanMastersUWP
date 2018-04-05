@@ -78,7 +78,7 @@ typedef struct globalopts_struct {
 	OPT_DRIVERTYPE driver;
 	OPT_ADRIVERTYPE adriver;
 	OPT_AQUALITYTYPE aquality;
-	OPT_ENABLABLE fullscreen, subtitles, scanlines, fps, stereo;
+	OPT_ENABLABLE fullscreen, subtitles, fps, stereo;
 	OPT_ENABLABLE music3do, musicremix, speech;
 	OPT_ENABLABLE keepaspect;
 	OPT_CONSOLETYPE menu, text, cscan, scroll, intro, meleezoom, shield;

@@ -297,34 +297,6 @@ void TFB_GL_UploadTransitionScreen (void)
 }
 
 static void
-TFB_GL_ScanLines (void)
-{
-	int y;
-
-	glDisable (GL_TEXTURE_2D);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_DST_COLOR, GL_ZERO);
-	glColor3f (0.85f, 0.85f, 0.85f);
-	for (y = 0; y < ScreenHeightActual; y += 2)
-	{
-		glBegin (GL_LINES);
-		glVertex2i (0, y);
-		glVertex2i (ScreenWidthActual, y);
-		glEnd ();
-	}
-
-	glBlendFunc (GL_DST_COLOR, GL_ONE);
-	glColor3f (0.2f, 0.2f, 0.2f);
-	for (y = 1; y < ScreenHeightActual; y += 2)
-	{
-		glBegin (GL_LINES);
-		glVertex2i (0, y);
-		glVertex2i (ScreenWidthActual, y);
-		glEnd ();
-	}
-}
-
-static void
 TFB_GL_DrawQuad (SDL_Rect *r)
 {
 	BOOLEAN keep_aspect_ratio = optKeepAspectRatio;
@@ -561,9 +533,6 @@ TFB_GL_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect)
 static void
 TFB_GL_Postprocess (void)
 {
-	if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-		TFB_GL_ScanLines ();
-
 	//TODO FIX ME -- Break for now // SDL_GL_SwapBuffers ();
 }	
 

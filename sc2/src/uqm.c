@@ -107,7 +107,6 @@ struct options_struct
 	DECL_CONFIG_OPTION(bool, opengl);
 	DECL_CONFIG_OPTION2(int, resolution, width, height);
 	DECL_CONFIG_OPTION(bool, fullscreen);
-	DECL_CONFIG_OPTION(bool, scanlines);
 	DECL_CONFIG_OPTION(int, scaler);
 	DECL_CONFIG_OPTION(bool, showFps);
 	DECL_CONFIG_OPTION(bool, keepAspectRatio);
@@ -242,7 +241,6 @@ main (int argc, char *argv[])
 		INIT_CONFIG_OPTION(  opengl,            false ),
 		INIT_CONFIG_OPTION2( resolution,        640, 480 ),
 		INIT_CONFIG_OPTION(  fullscreen,        false ),
-		INIT_CONFIG_OPTION(  scanlines,         false ),
 		INIT_CONFIG_OPTION(  scaler,            0 ),
 		INIT_CONFIG_OPTION(  showFps,           false ),
 		INIT_CONFIG_OPTION(  keepAspectRatio,   false ),
@@ -441,10 +439,6 @@ main (int argc, char *argv[])
 	gfxDriver = options.opengl.value ?
 			TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
 	gfxFlags = options.scaler.value;
-	if (options.fullscreen.value)
-		gfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
-	if (options.scanlines.value)
-		gfxFlags |= TFB_GFXFLAGS_SCANLINES;
 	if (options.showFps.value)
 		gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
 	TFB_InitGraphics (gfxDriver, gfxFlags, options.resolution.width,
@@ -665,7 +659,7 @@ getUserConfigOptions (struct options_struct *options)
 	getListConfigValue (&options->scaler, "config.scaler", scalerList);
 
 	getBoolConfigValue (&options->fullscreen, "config.fullscreen");
-	getBoolConfigValue (&options->scanlines, "config.scanlines");
+
 	getBoolConfigValue (&options->showFps, "config.showfps");
 	getBoolConfigValue (&options->keepAspectRatio, "config.keepaspectratio");
 	getGammaConfigValue (&options->gamma, "config.gamma");
@@ -756,7 +750,6 @@ static struct option longOptions[] =
 	{"opengl", 0, NULL, 'o'},
 	{"scale", 1, NULL, 'c'},
 	{"meleezoom", 1, NULL, 'b'},
-	{"scanlines", 0, NULL, 's'},
 	{"fps", 0, NULL, 'p'},
 	{"configdir", 1, NULL, 'C'},
 	{"contentdir", 1, NULL, 'n'},
@@ -953,9 +946,6 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 					InvalidArgument (optarg, "--meleezoom or -b");
 					badArg = true;
 				}
-				break;
-			case 's':
-				setBoolOption (&options->scanlines, true);
 				break;
 			case 'p':
 				setBoolOption (&options->showFps, true);
@@ -1226,8 +1216,6 @@ usage (FILE *out, const struct options_struct *defaults)
 			"triscan, hq or none (default) )");
 	log_add (log_User, "  -b, --meleezoom=MODE (step, aka pc, or smooth, "
 			"aka 3do; default is 3do)");
-	log_add (log_User, "  -s, --scanlines (default %s)",
-			boolOptString (&defaults->scanlines));
 	log_add (log_User, "  -p, --fps (default %s)",
 			boolOptString (&defaults->showFps));
 	log_add (log_User, "  -g, --gamma=CORRECTIONVALUE (default 1.0, which "

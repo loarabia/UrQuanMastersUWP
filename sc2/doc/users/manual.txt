@@ -90,10 +90,6 @@ Melee zooming mode (pc or 3do); 'step' is an alias for 'pc' and 'smooth'
 is an alias for '3do'. Default is 3do. Slower machine owners can set it
 to 'pc' to get better performance in melee.
 
-	-s                 (or --scanlines)
-
-Simulates interlaced displays.
-
 	-g                 (or --gamma)
 
 Sets gamma correction. 1.0 causes no change (unless your graphics card

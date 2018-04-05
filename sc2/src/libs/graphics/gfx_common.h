@@ -43,7 +43,7 @@ enum
 // flags for TFB_InitGraphics
 #define TFB_GFXFLAGS_FULLSCREEN         (1<<0)
 #define TFB_GFXFLAGS_SHOWFPS            (1<<1)
-#define TFB_GFXFLAGS_SCANLINES          (1<<2)
+
 #define TFB_GFXFLAGS_SCALE_BILINEAR     (1<<3)
 #define TFB_GFXFLAGS_SCALE_BIADAPT      (1<<4)
 #define TFB_GFXFLAGS_SCALE_BIADAPTADV   (1<<5)

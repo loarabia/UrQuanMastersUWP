@@ -395,7 +395,7 @@ SetDefaults (void)
 	choices[0].selected = opts.res;
 	choices[1].selected = opts.driver;
 	choices[2].selected = opts.scaler;
-	choices[3].selected = opts.scanlines;
+
 	choices[4].selected = opts.menu;
 	choices[5].selected = opts.text;
 	choices[6].selected = opts.cscan;
@@ -430,7 +430,7 @@ PropagateResults (void)
 	opts.res = choices[0].selected;
 	opts.driver = choices[1].selected;
 	opts.scaler = choices[2].selected;
-	opts.scanlines = choices[3].selected;
+
 	opts.menu = choices[4].selected;
 	opts.text = choices[5].selected;
 	opts.cscan = choices[6].selected;
@@ -1259,8 +1259,7 @@ GetGlobalOptions (GLOBALOPTS *opts)
 	opts->fullscreen = (GfxFlags & TFB_GFXFLAGS_FULLSCREEN) ?
 			OPTVAL_ENABLED : OPTVAL_DISABLED;
 	opts->subtitles = optSubtitles ? OPTVAL_ENABLED : OPTVAL_DISABLED;
-	opts->scanlines = (GfxFlags & TFB_GFXFLAGS_SCANLINES) ? 
-		OPTVAL_ENABLED : OPTVAL_DISABLED;
+
 	opts->menu = (optWhichMenu == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->text = (optWhichFonts == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
 	opts->cscan = (optWhichCoarseScan == OPT_3DO) ? OPTVAL_3DO : OPTVAL_PC;
@@ -1472,17 +1471,12 @@ SetGlobalOptions (GLOBALOPTS *opts)
 		res_PutString ("config.scaler", "no");
 		break;
 	}
-	if (opts->scanlines) {
-		NewGfxFlags |= TFB_GFXFLAGS_SCANLINES;
-	} else {
-		NewGfxFlags &= ~TFB_GFXFLAGS_SCANLINES;
-	}
+
 	if (opts->fullscreen)
 		NewGfxFlags |= TFB_GFXFLAGS_FULLSCREEN;
 	else
 		NewGfxFlags &= ~TFB_GFXFLAGS_FULLSCREEN;
 
-	res_PutBoolean ("config.scanlines", opts->scanlines);
 	res_PutBoolean ("config.fullscreen", opts->fullscreen);
 
 

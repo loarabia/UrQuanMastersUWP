@@ -284,32 +284,6 @@ TFB_Pure_UninitGraphics (void)
 	UnInit_Screen (&fade_temp);
 }
 
-static void
-ScanLines (SDL_Surface *dst, SDL_Rect *r)
-{
-	const int rw = r->w * 2;
-	const int rh = r->h * 2;
-	SDL_PixelFormat *fmt = dst->format;
-	const int pitch = dst->pitch;
-	const int len = pitch / fmt->BytesPerPixel;
-	int ddst;
-	Uint32 *p = (Uint32 *) dst->pixels;
-	int x, y;
-
-	p += len * (r->y * 2) + (r->x * 2);
-	ddst = len + len - rw;
-
-	for (y = rh; y; y -= 2, p += ddst)
-	{
-		for (x = rw; x; --x, ++p)
-		{
-			// we ignore the lower bits as the difference
-			// of 1 in 255 is negligible
-			*p = ((*p >> 1) & 0x7f7f7f7f) + ((*p >> 2) & 0x3f3f3f3f);
-		}
-	}
-}
-
 static SDL_Surface *backbuffer = NULL, *scalebuffer = NULL;
 static SDL_Rect updated;
 
@@ -375,9 +349,6 @@ TFB_Pure_Scaled_Postprocess (void)
 
 	if (scaler)
 		scaler (backbuffer, scalebuffer, &updated);
-
-	if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-		ScanLines (scalebuffer, &updated);
 		
 	SDL_UnlockSurface (backbuffer);
 	SDL_UnlockSurface (scalebuffer);
@@ -449,9 +420,6 @@ TFB_Pure_ColorLayer (Uint8 r, Uint8 g, Uint8 b, Uint8 a, SDL_Rect *rect)
 //	for (i = 1; i < 1001; ++i) // run for 1000 frames
 //	{
 //		scaler (SDL_Screen, scaled_display, &updated);
-//		
-//		if (GfxFlags & TFB_GFXFLAGS_SCANLINES)
-//			ScanLines (scaled_display, &updated);
 //
 //		if (i % 100 == 0)
 //		{
