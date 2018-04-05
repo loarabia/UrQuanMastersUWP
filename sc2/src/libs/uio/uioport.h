@@ -66,7 +66,7 @@
 #endif
 
 // Variations in path handling
-#if defined(WIN32) || defined(__SYMBIAN32__)
+#if defined(WIN32)
 	// HAVE_DRIVE_LETTERS is defined to signify that DOS/Windows style drive
 	// letters are to be recognised on this platform.
 #	define HAVE_DRIVE_LETTERS
@@ -160,13 +160,6 @@ typedef unsigned short mode_t;
 #	define S_IFREG _S_IFREG
 #	define S_IFCHR _S_IFCHR
 #	define S_IFDIR _S_IFDIR
-#endif
-#ifdef __SYMBIAN32__
-	// TODO: Symbian doesn't have readdir_r(). If uio is to be usable
-	// outside of uqm (which defines its own backup readdir_r()), an
-	// implementation of that function needs to be added to uio.
-#	include <dirent.h>
-	int readdir_r (DIR *dirp, struct dirent *entry, struct dirent **result);
 #endif
 
 #endif  /* _UIOPORT_H */

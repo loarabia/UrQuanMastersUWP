@@ -123,21 +123,9 @@ mkdirhier (const char *path)
 					goto err;
 				}
 			}
-			#ifdef __SYMBIAN32__
-			// XXX: HACK: If we don't have access to a directory, we can
-			// still have access to the underlying entries. We don't
-			// actually know whether the entry is a directory, but I know of
-			// no way to find out. We just pretend that it is; if we were
-			// wrong, an error will occur when we try to do something with
-			// the directory. That /should/ not be a problem, as any such
-			// action should have its own error checking.
-			if (errno != EACCES)
-			#endif			
-			{
-				log_add (log_Error, "Can't stat \"%s\": %s", subpath, strerror (errno));
-					goto err;
-			}
-		}
+			log_add (log_Error, "Can't stat \"%s\": %s", subpath, strerror (errno));
+			goto err;
+		} //stat
 		partStart = path + strlen(subpath);
 		free(subpath);
 

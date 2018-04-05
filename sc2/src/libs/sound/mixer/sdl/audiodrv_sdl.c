@@ -127,13 +127,8 @@ mixSDL_Init (audio_Driver *driver, sint32 flags)
 	else if (flags & audio_QUALITY_LOW)
 	{
 		quality = MIX_QUALITY_LOW;
-#ifdef __SYMBIAN32__
-		desired.freq = 11025;
-		desired.samples = 4096;
-#else
 		desired.freq = 22050;
 		desired.samples = 2048;
-#endif		
 	}
 	else
 	{

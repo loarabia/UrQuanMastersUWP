@@ -11,8 +11,6 @@
 	 * that file manually. */
 #	include "config_vc6.h"
 #endif /* _MSC_VER > 1910 */
-#elif defined(__SYMBIAN32__)
-#	include "symbian/config.h"
 #elif defined (__MINGW32__) || defined (__CYGWIN__)
 	/* If we're compiling on MS Windows using build.sh, use
 	 * config_win.h, generated from src/config_win.h.in. */

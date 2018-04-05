@@ -24,7 +24,6 @@
 // Compilation related
 #ifdef _MSC_VER
 #	define inline __inline
-#elif defined(__SYMBIAN32__)
 #else
 #	define inline __inline__
 #	ifdef __MINGW32__
@@ -556,7 +555,7 @@ typedef unsigned int wint_t;
 #endif
 
 // Variations in path handling
-#if defined(WIN32) || defined(__SYMBIAN32__)
+#if defined(WIN32)
 	// HAVE_DRIVE_LETTERS is defined to signify that DOS/Windows style drive
 	// letters are to be recognised on this platform.
 #	define HAVE_DRIVE_LETTERS
