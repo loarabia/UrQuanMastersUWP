@@ -8,6 +8,7 @@ add_subdirectory( src/libs/decomp )
 add_subdirectory( src/libs/file)
 add_subdirectory( src/libs/graphics)
 add_subdirectory( src/libs/heap)
+add_subdirectory( src/libs/input)
 add_subdirectory( src/libs/list)
 add_subdirectory( src/libs/log)
 add_subdirectory( src/libs/uio )
@@ -24,6 +25,7 @@ target_link_libraries(uqm
     file
     heap
     graphics
+    input
     list
     log
     uio
