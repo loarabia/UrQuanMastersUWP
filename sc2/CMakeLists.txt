@@ -11,6 +11,8 @@ add_subdirectory( src/libs/heap)
 add_subdirectory( src/libs/input)
 add_subdirectory( src/libs/list)
 add_subdirectory( src/libs/log)
+add_subdirectory( src/libs/lua)
+add_subdirectory( src/libs/luauqm)
 add_subdirectory( src/libs/uio )
 add_subdirectory( src/libs/video)
 
@@ -28,5 +30,7 @@ target_link_libraries(uqm
     input
     list
     log
+    lua
+    luauqm
     uio
     video)
