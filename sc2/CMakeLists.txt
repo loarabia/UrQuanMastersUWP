@@ -6,6 +6,7 @@ add_subdirectory( src/libs/callback )
 add_subdirectory( src/libs/cdp )
 add_subdirectory( src/libs/decomp )
 add_subdirectory( src/libs/uio )
+add_subdirectory( src/libs/video)
 
 # add the source
 add_executable(uqm
@@ -15,4 +16,5 @@ target_link_libraries(uqm
     callback
     cdp
     decomp
-    uio)
+    uio
+    video)
