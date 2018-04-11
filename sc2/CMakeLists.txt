@@ -14,6 +14,7 @@ add_subdirectory( src/libs/log)
 add_subdirectory( src/libs/lua)
 add_subdirectory( src/libs/luauqm)
 add_subdirectory( src/libs/math)
+add_subdirectory( src/libs/md5)
 add_subdirectory( src/libs/uio )
 add_subdirectory( src/libs/video)
 
@@ -34,5 +35,6 @@ target_link_libraries(uqm
     lua
     luauqm
     math
+    md5
     uio
     video)
