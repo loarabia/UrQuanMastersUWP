@@ -6,7 +6,7 @@ add_subdirectory( src/libs/callback )
 add_subdirectory( src/libs/cdp )
 add_subdirectory( src/libs/decomp )
 add_subdirectory( src/libs/file)
-
+add_subdirectory( src/libs/graphics)
 add_subdirectory( src/libs/heap)
 add_subdirectory( src/libs/list)
 add_subdirectory( src/libs/log)
@@ -23,6 +23,7 @@ target_link_libraries(uqm
     decomp
     file
     heap
+    graphics
     list
     log
     uio
