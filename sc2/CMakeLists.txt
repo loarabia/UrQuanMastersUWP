@@ -5,6 +5,8 @@ project(UrQuanMasters VERSION 0.7)
 add_subdirectory( src/libs/callback )
 add_subdirectory( src/libs/cdp )
 add_subdirectory( src/libs/decomp )
+add_subdirectory( src/libs/file)
+
 add_subdirectory( src/libs/uio )
 add_subdirectory( src/libs/video)
 
@@ -16,5 +18,6 @@ target_link_libraries(uqm
     callback
     cdp
     decomp
+    file
     uio
     video)
