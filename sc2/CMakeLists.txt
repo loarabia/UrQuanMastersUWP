@@ -9,7 +9,7 @@ add_subdirectory( src/libs/file)
 
 add_subdirectory( src/libs/heap)
 add_subdirectory( src/libs/list)
-
+add_subdirectory( src/libs/log)
 add_subdirectory( src/libs/uio )
 add_subdirectory( src/libs/video)
 
@@ -24,5 +24,6 @@ target_link_libraries(uqm
     file
     heap
     list
+    log
     uio
     video)
