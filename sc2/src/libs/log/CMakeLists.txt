@@ -8,8 +8,11 @@ loginternal.h msgbox.h uqmlog.h msgbox_stub.c
 target_include_directories(log
     PRIVATE ../..)
 
+    # TODO FIX FIXME - gitignore is ignoring this file, why?
+
 # HANDLE MSG BOXES ON OTHER PLATFORMS
-# TODO FIX FIXME
+ 
+# TODO FIX FIXME -
 # case "$HOST_SYSTEM" in
 # 	Darwin)
 # 		uqm_MFILES="msgbox_macosx.m"
