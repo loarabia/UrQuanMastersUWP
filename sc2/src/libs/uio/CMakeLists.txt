@@ -26,7 +26,7 @@ set(uio_SOURCES
     regex/regex_internal.ci
     regex/regex.c
     regex/regex.h
-    regex.regexec.ci)
+    regex/regexec.ci)
 
 if (USE_ZIP_FS)
     set(uio_SOURCES ${uio_SOURCES} zip/zip.c zip/zip.h)
@@ -35,4 +35,4 @@ endif()
 add_library(uio ${uio_SOURCES})
 
 target_include_directories(uio
-    PRIVATE ../..)
+    PRIVATE ../.. regex)
