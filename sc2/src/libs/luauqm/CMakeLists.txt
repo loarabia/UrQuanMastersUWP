@@ -6,6 +6,7 @@ luauqm.h scriptres.h
 )
 
 target_compile_definitions(luauqm
-    PRIVATE -DUSE_INTERNAL_LUA)
+    PRIVATE USE_INTERNAL_LUA)
+
 target_include_directories(luauqm
     PRIVATE ../..)

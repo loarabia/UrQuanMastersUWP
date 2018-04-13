@@ -1,0 +1,13 @@
+project(time VERSION 0.7)
+
+
+set(uqm_CFILES timecommon.c sdl/sdltime.c )
+set(uqm_HFILES timecommon.h sdl/sdltime.h)
+
+set(time_SOURCES ${uqm_CFILES} ${uqm_HFILES})
+
+
+add_library(time ${time_SOURCES} )
+
+target_include_directories(time
+    PRIVATE ../..)
