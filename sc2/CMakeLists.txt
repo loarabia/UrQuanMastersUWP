@@ -559,4 +559,4 @@ target_include_directories(uqm
     )
 
 target_compile_definitions(uqm
-    PRIVATE USE_INTERNAL_LUA HAVE_OPENAL)
+    PRIVATE USE_INTERNAL_LUA HAVE_OPENAL USE_INTERNAL_MIKMOD)

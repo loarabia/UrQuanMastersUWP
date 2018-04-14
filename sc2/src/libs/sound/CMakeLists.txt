@@ -1,12 +1,13 @@
 project(sound VERSION 0.7)
 
 
+set(OGGVORBIS 1)
 set(uqm_CFILES audiocore.c fileinst.c resinst.c sound.c sfx.c music.c stream.c trackplayer.c)
 set(uqm_HFILES audiocore.h sndintrn.h sound.h stream.h trackint.h trackplayer.h)
 
 set(sound_SOURCES ${uqm_CFILES} ${uqm_HFILES})
 
-set(sound_sources 
+set(sound_SOURCES 
     ${sound_SOURCES} 
     mixer/nosound/audiodrv_nosound.c
     mixer/nosound/audiodrv_nosound.h
@@ -37,3 +38,6 @@ add_library(sound ${sound_SOURCES} )
 
 target_include_directories(sound
     PRIVATE ../..)
+
+target_compile_definitions(sound
+    PRIVATE USE_INTERNAL_MIKMOD)

@@ -6,19 +6,24 @@ set(uqm_HFILES thrcommon.h)
 
 set(threads_SOURCES ${uqm_CFILES} ${uqm_HFILES})
 
-if( ${USE_SDL_THREADS})
+set(USE_SDL_THREADS ON)
+
+if(USE_SDL_THREADS)
     set(threads_SOURCES
          ${threads_SOURCES}
-         sdlthreads.c
-         sdlthreads.h)
-elseif( ${USE_PTHREADS})
+         sdl/sdlthreads.h
+         sdl/sdlthreads.c)
+elseif(USE_PTHREADS)
     set(threads_SOURCES
          ${threads_SOURCES}
-         posixthreads.c
-         posixthreads.h)
+         pthread/posixthreads.c
+         pthread/posixthreads.h)
 endif()
 
 add_library(threads ${threads_SOURCES} )
 
 target_include_directories(threads
     PRIVATE ../..)
+
+target_compile_definitions(threads
+    PRIVATE THREADLIB_SDL)
