@@ -1,0 +1,13 @@
+set(include_SOURCES   
+    luafuncs
+    luacomm.c
+    luacomm.h
+    luadebug.c
+    luadebug.h
+    luaevent.c
+    luaevent.h
+    luainit.c
+    luainit.h
+    luastate.c
+    luastate.h
+)

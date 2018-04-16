@@ -1,0 +1,44 @@
+# MACRO prefix_list (prefix, ANON_LIST)
+#   This macro will prepend a prefix to all items in a list.
+#
+# in: 
+#   prefix - the relative file path from the calling file to the include to add.
+#       by convention in this codebase, all includes are named CMakeInclude.txt
+#   ANON_LIST - a list of files. This binds to ARGN and is not named.
+#
+# out:
+#   mac_prefix_list_result - a list of all now prefixed items.
+#
+# example:
+#   mac_prefix_list(foor/bar/ a.h;b.h;c.h)
+#   PRODUCES
+#   mac_prefix_list_result = foo/bar/a.h;foo/bar/b.h;foo/bar/c.h
+macro(mac_prefix_list prefix )
+    set(mac_prefix_list_result)
+    foreach (file ${ARGN})
+        set(mac_prefix_list_result ${mac_prefix_list_result} ${prefix}${file})
+    endforeach()
+endmacro()
+
+# MACRO prefix_include( include_filename, prefix)
+#   This macro will include a file and prefix a list of sources the file produces
+#   in a variable called include_SOURCES with the given prefix
+# in:
+#   include_filename - the filename of the file to include (note just the filename)
+#   prefix - the prefix to prepend to the filename as well as the source list in the file.
+#
+# out:
+#   nothing directly however there are side effects.
+#   Due to a call to mac_prefix_list you wind up with the same output in the global
+#       namespace, mac_prefix_list_result
+#
+# example:
+#   mac_prefix_include(CMakeInclude.txt src/getopt/)
+#   
+#   This would read the file in ./src/getopt/CMakeInclude.txt and prefix a file list found in
+#   the include_SOURCES variable with the prefix src/getopt/.
+macro(mac_prefix_include include_filename prefix)
+    include("${prefix}${include_filename}")
+    mac_prefix_list(${prefix} ${include_SOURCES})
+    set(uqm_SOURCES ${uqm_SOURCES} ${mac_prefix_list_result})
+endmacro()

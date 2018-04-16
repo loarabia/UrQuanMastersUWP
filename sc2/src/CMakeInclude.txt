@@ -1,0 +1,11 @@
+set(include_SOURCES 
+    port.c
+    options.c
+    uqm.c
+    config.h 
+    endian_uqm.h
+    options.h
+    port.h 
+    types.h
+    uqmversion.h
+)

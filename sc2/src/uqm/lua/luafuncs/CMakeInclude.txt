@@ -1,0 +1,12 @@
+set(include_SOURCES   
+    commfuncs.c
+    commfuncs.h
+    customfuncs.c
+    customfuncs.h
+    eventfuncs.c
+    eventfuncs.h
+    logfuncs.c
+    logfuncs.h
+    statefuncs.c
+    statefuncs.h
+)

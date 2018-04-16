@@ -1,0 +1,5 @@
+set(include_SOURCES 
+    getopt.c
+    getopt.h
+    getopt1.c
+)

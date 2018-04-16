@@ -1,0 +1,27 @@
+set(include_SOURCES
+    calc.c
+    cargo.c
+    devices.c
+    elemdata.h
+    generate.h
+    gentopo.c
+    lander.c
+    lander.h
+    lifeform.h
+    orbits.c
+    oval.c
+    plandata.h
+    planets.c
+    planets.h
+    plangen.c
+    pl_stuff.c
+    pstarmap.c
+    report.c
+    roster.c
+    scan.c
+    scan.h
+    solarsys.c
+    solarsys.h
+    sundata.h
+    surface.c
+)

@@ -1,0 +1,14 @@
+set(include_SOURCES
+    buildpick.c
+    buildpick.h
+    loadmele.c
+    loadmele.h
+    melee.c
+    melee.h
+    meleesetup.c
+    meleesetup.h
+    meleeship.h
+    pickmele.c
+    pickmele.h
+
+)
