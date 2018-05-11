@@ -119,8 +119,8 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	else
 	{
 		videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 640 * 4;
-		ScreenHeightActual = 480 * 4;
+		ScreenWidthActual = 640 *2;
+		ScreenHeightActual = 480 *2;
 		graphics_backend = &pure_scaled_backend;
 
 		if (width != 640 || height != 480)
