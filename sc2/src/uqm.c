@@ -104,7 +104,6 @@ struct options_struct
 	int numAddons;
 	
 	// Commandline and user config options
-	DECL_CONFIG_OPTION(bool, opengl);
 	DECL_CONFIG_OPTION2(int, resolution, width, height);
 	DECL_CONFIG_OPTION(bool, fullscreen);
 	DECL_CONFIG_OPTION(int, scaler);
@@ -238,7 +237,6 @@ main (int argc, char *argv[])
 		/* .addons = */             NULL,
 		/* .numAddons = */          0,
 
-		INIT_CONFIG_OPTION(  opengl,            false ),
 		INIT_CONFIG_OPTION2( resolution,        640, 480 ),
 		INIT_CONFIG_OPTION(  fullscreen,        false ),
 		INIT_CONFIG_OPTION(  scaler,            0 ),
@@ -437,8 +435,7 @@ main (int argc, char *argv[])
 	NetManager_init ();
 #endif
 
-	gfxDriver = options.opengl.value ?
-			TFB_GFXDRIVER_SDL_OPENGL : TFB_GFXDRIVER_SDL_PURE;
+	gfxDriver = TFB_GFXDRIVER_SDL_PURE;
 	gfxFlags = options.scaler.value;
 	if (options.showFps.value)
 		gfxFlags |= TFB_GFXFLAGS_SHOWFPS;
@@ -646,17 +643,6 @@ getUserConfigOptions (struct options_struct *options)
 		options->resolution.set = true;
 	}
 
-	if (res_IsBoolean ("config.alwaysgl") && !options->opengl.set)
-	{	// config.alwaysgl is processed differently than others
-		// Only set when it's 'true'
-		if (res_GetBoolean ("config.alwaysgl"))
-		{
-			options->opengl.value = true;
-			options->opengl.set = true;
-		}
-	}
-	getBoolConfigValue (&options->opengl, "config.usegl");
-
 	getListConfigValue (&options->scaler, "config.scaler", scalerList);
 
 	getBoolConfigValue (&options->fullscreen, "config.fullscreen");
@@ -748,7 +734,6 @@ static struct option longOptions[] =
 {
 	{"res", 1, NULL, 'r'},
 	{"fullscreen", 0, NULL, 'f'},
-	{"opengl", 0, NULL, 'o'},
 	{"scale", 1, NULL, 'c'},
 	{"meleezoom", 1, NULL, 'b'},
 	{"fps", 0, NULL, 'p'},
@@ -923,12 +908,6 @@ parseOptions (int argc, char *argv[], struct options_struct *options)
 				break;
 			case 'w':
 				setBoolOption (&options->fullscreen, false);
-				break;
-			case 'o':
-				setBoolOption (&options->opengl, true);
-				break;
-			case 'x':
-				setBoolOption (&options->opengl, false);
 				break;
 			case 'k':
 				setBoolOption (&options->keepAspectRatio, true);
@@ -1201,16 +1180,11 @@ usage (FILE *out, const struct options_struct *defaults)
 	log_captureLines (LOG_CAPTURE_ALL);
 	
 	log_add (log_User, "Options:");
-	log_add (log_User, "  -r, --res=WIDTHxHEIGHT (default 640x480, bigger "
-			"works only with --opengl)");
+	log_add (log_User, "  -r, --res=WIDTHxHEIGHT (default 640x480)");
 	log_add (log_User, "  -f, --fullscreen (default %s)",
 			boolOptString (&defaults->fullscreen));
 	log_add (log_User, "  -w, --windowed (default %s)",
 			boolNotOptString (&defaults->fullscreen));
-	log_add (log_User, "  -o, --opengl (default %s)",
-			boolOptString (&defaults->opengl));
-	log_add (log_User, "  -x, --nogl (default %s)",
-			boolNotOptString (&defaults->opengl));
 	log_add (log_User, "  -k, --keepaspectratio (default %s)",
 			boolOptString (&defaults->keepAspectRatio));
 	log_add (log_User, "  -c, --scale=MODE (bilinear, biadapt, biadv, "

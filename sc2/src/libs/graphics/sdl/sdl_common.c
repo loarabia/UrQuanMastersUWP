@@ -17,7 +17,6 @@
  */
 
 #include "sdl_common.h"
-#include "opengl.h"
 #include "pure.h"
 #include "primitives.h"
 #include "options.h"
@@ -106,24 +105,7 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 
 	GfxFlags = flags;
 
-	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
-	{
-#ifdef HAVE_OPENGL
-		result = TFB_GL_ConfigureVideo (driver, flags, width, height,
-				togglefullscreen);
-#else
-		driver = TFB_GFXDRIVER_SDL_PURE;
-		log_add (log_Warning, "OpenGL support not compiled in,"
-				" so using pure SDL driver");
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height,
-				togglefullscreen);
-#endif
-	}
-	else
-	{
-		result = TFB_Pure_ConfigureVideo (driver, flags, width, height,
-				togglefullscreen);
-	}
+	result = TFB_Pure_ConfigureVideo (driver, flags, width, height, togglefullscreen);
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s",
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION,
@@ -146,22 +128,7 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 	char caption[200];
 
 	GfxFlags = flags;
-
-	if (driver == TFB_GFXDRIVER_SDL_OPENGL)
-	{
-#ifdef HAVE_OPENGL
-		result = TFB_GL_InitGraphics (driver, flags, width, height);
-#else
-		driver = TFB_GFXDRIVER_SDL_PURE;
-		log_add (log_Warning, "OpenGL support not compiled in,"
-				" so using pure SDL driver");
-		result = TFB_Pure_InitGraphics (driver, flags, width, height);
-#endif
-	}
-	else
-	{
-		result = TFB_Pure_InitGraphics (driver, flags, width, height);
-	}
+	result = TFB_Pure_InitGraphics (driver, flags, width, height);
 
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s", 
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, 
@@ -190,10 +157,6 @@ TFB_UninitGraphics (void)
 		UnInit_Screen (&SDL_Screens[i]);
 
 	TFB_Pure_UninitGraphics ();
-#ifdef HAVE_OPENGL
-	TFB_GL_UninitGraphics ();
-#endif
-
 	UnInit_Screen (&format_conv_surf);
 }
 
@@ -355,17 +318,6 @@ TFB_Canvas
 TFB_GetScreenCanvas (SCREEN screen)
 {
 	return SDL_Screens[screen];
-}
-
-void
-TFB_UploadTransitionScreen (void)
-{
-#ifdef HAVE_OPENGL
-	if (GraphicsDriver == TFB_GFXDRIVER_SDL_OPENGL)
-	{
-		TFB_GL_UploadTransitionScreen ();
-	}
-#endif
 }
 
 bool

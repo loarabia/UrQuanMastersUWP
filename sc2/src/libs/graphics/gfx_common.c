@@ -143,14 +143,6 @@ ExpandRect (RECT *rect, int expansion)
 void
 SetTransitionSource (const RECT *pRect)
 {
-	RECT ActualRect;
-
-	if (pRect)
-	{	/* expand the rect to accomodate scalers in OpenGL mode */
-		ActualRect = *pRect;
-		pRect = &ActualRect;
-		ExpandRect (&ActualRect, 2);
-	}
 	TFB_DrawScreen_Copy (pRect, TFB_SCREEN_MAIN, TFB_SCREEN_TRANSITION);
 }
 
@@ -173,8 +165,6 @@ ScreenTransition (int TransType, const RECT *pRect)
 		TransitionClipRect.extent.width = ScreenWidth;
 		TransitionClipRect.extent.height = ScreenHeight;
 	}
-
-	TFB_UploadTransitionScreen ();
 	
 	TransitionAmount = 0;
 	FlushGraphics ();

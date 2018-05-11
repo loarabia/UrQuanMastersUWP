@@ -1428,12 +1428,10 @@ SetGlobalOptions (GLOBALOPTS *opts)
 	case OPTVAL_800_600:
 		NewWidth = 800;
 		NewHeight = 600;
-		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
 		break;
 	case OPTVAL_1024_768:
 		NewWidth = 1024;
 		NewHeight = 768;
-		NewDriver = TFB_GFXDRIVER_SDL_OPENGL;
 		break;
 	default:
 		/* Don't mess with the custom value */
@@ -1442,8 +1440,6 @@ SetGlobalOptions (GLOBALOPTS *opts)
 
 	res_PutInteger ("config.reswidth", NewWidth);
 	res_PutInteger ("config.resheight", NewHeight);
-	res_PutBoolean ("config.alwaysgl", opts->driver == OPTVAL_ALWAYS_GL);
-	res_PutBoolean ("config.usegl", NewDriver == TFB_GFXDRIVER_SDL_OPENGL);
 
 	switch (opts->scaler) {
 	case OPTVAL_BILINEAR_SCALE:

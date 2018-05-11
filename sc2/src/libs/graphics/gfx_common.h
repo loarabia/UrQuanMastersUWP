@@ -27,7 +27,6 @@
 // driver for TFB_InitGraphics
 enum
 {
-	TFB_GFXDRIVER_SDL_OPENGL,
 	TFB_GFXDRIVER_SDL_PURE,
 };
 
@@ -68,7 +67,6 @@ int TFB_ReInitGraphics (int driver, int flags, int width, int height);
 void TFB_UninitGraphics (void);
 void TFB_ProcessEvents (void);
 bool TFB_SetGamma (float gamma);
-void TFB_UploadTransitionScreen (void);
 // This function should not be called directly
 void TFB_SwapBuffers (int force_full_redraw);
 
