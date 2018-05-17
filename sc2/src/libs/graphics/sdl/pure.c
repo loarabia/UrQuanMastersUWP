@@ -100,11 +100,11 @@ CalcAlphaFormat (const SDL_PixelFormat* video, SDL_PixelFormat* ours)
 }
 
 int
-TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int togglefullscreen)
+TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int togglefullscreen)
 {
 	int i, videomode_flags;
 	SDL_PixelFormat conv_fmt;
-	
+
 	GraphicsDriver = driver;
 
 	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly
@@ -119,13 +119,13 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 	else
 	{
 		videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 640 *2;
-		ScreenHeightActual = 480 *2;
+		ScreenWidthActual = 640 * 2;
+		ScreenHeightActual = 480 * 2;
 		graphics_backend = &pure_scaled_backend;
 
 		if (width != 640 || height != 480)
-			log_add (log_Error, "Screen resolution of %dx%d not supported "
-					"under pure SDL, using 640x480", width, height);
+			log_add(log_Error, "Screen resolution of %dx%d not supported "
+				"under pure SDL, using 640x480", width, height);
 	}
 
 	//videomode_flags |= SDL_ANYFORMAT;
@@ -137,7 +137,7 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 
 	videomode_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
-	SDL_MainWindow = SDL_CreateWindow("UQM",
+	SDL_MainWindow = SDL_CreateWindow("Ur-Quan Masters",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		ScreenWidthActual, ScreenHeightActual,
@@ -152,88 +152,87 @@ TFB_Pure_ConfigureVideo (int driver, int flags, int width, int height, int toggl
 
 	if (SDL_Video == NULL)
 	{
-		log_add (log_Error, "Couldn't set %ix%i video mode: %s",
+		log_add(log_Error, "Couldn't set %ix%i video mode: %s",
 			ScreenWidthActual, ScreenHeightActual,
-			SDL_GetError ());
+			SDL_GetError());
 		return -1;
 	}
-	else
-	{
-		const SDL_Surface *video = SDL_GetWindowSurface(SDL_MainWindow);
-		const SDL_PixelFormat* fmt = video->format;
 
-		ScreenColorDepth = fmt->BitsPerPixel;
-		log_add (log_Info, "Set the resolution to: %ix%ix%i",
-				video->w, video->h, ScreenColorDepth);
-		log_add (log_Info, "  Video: R %08x, G %08x, B %08x, A %08x",
-				fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
-		
-		if (togglefullscreen)
-		{
-			// NOTE: We cannot change the format_conv_surf now because we
-			//   have already loaded lots of graphics and changing it now
-			//   will only lead to chaos.
-			// Just check if channel order has changed significantly
-			CalcAlphaFormat (fmt, &conv_fmt);
-			fmt = format_conv_surf->format;
-			if (conv_fmt.Rmask != fmt->Rmask || conv_fmt.Bmask != fmt->Bmask)
-				log_add (log_Warning, "Warning: pixel format has changed "
-						"significantly. Rendering will be slow.");
-			return 0;
-		}
+	const SDL_Surface *video = SDL_GetWindowSurface(SDL_MainWindow);
+	const SDL_PixelFormat* fmt = video->format;
+
+	ScreenColorDepth = fmt->BitsPerPixel;
+	log_add(log_Info, "Set the resolution to: %ix%ix%i",
+		video->w, video->h, ScreenColorDepth);
+	log_add(log_Info, "  Video: R %08x, G %08x, B %08x, A %08x",
+		fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
+
+	if (togglefullscreen)
+	{
+		// NOTE: We cannot change the format_conv_surf now because we
+		//   have already loaded lots of graphics and changing it now
+		//   will only lead to chaos.
+		// Just check if channel order has changed significantly
+		CalcAlphaFormat(fmt, &conv_fmt);
+		fmt = format_conv_surf->format;
+		if (conv_fmt.Rmask != fmt->Rmask || conv_fmt.Bmask != fmt->Bmask)
+			log_add(log_Warning, "Warning: pixel format has changed "
+				"significantly. Rendering will be slow.");
+		return 0;
 	}
+
 
 	// Create a 32bpp surface in a compatible format which will supply
 	// the format information to all other surfaces used in the game
 	if (format_conv_surf)
 	{
-		SDL_FreeSurface (format_conv_surf);
+		SDL_FreeSurface(format_conv_surf);
 		format_conv_surf = NULL;
 	}
-	CalcAlphaFormat (SDL_Video->format, &conv_fmt);
-	format_conv_surf = SDL_CreateRGBSurface (SDL_SWSURFACE, 0, 0,
-			conv_fmt.BitsPerPixel, conv_fmt.Rmask, conv_fmt.Gmask,
-			conv_fmt.Bmask, conv_fmt.Amask);
+	CalcAlphaFormat(SDL_Video->format, &conv_fmt);
+	format_conv_surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 0, 0,
+		conv_fmt.BitsPerPixel, conv_fmt.Rmask, conv_fmt.Gmask,
+		conv_fmt.Bmask, conv_fmt.Amask);
 	if (!format_conv_surf)
 	{
-		log_add (log_Error, "Couldn't create format_conv_surf: %s",
-				SDL_GetError());
+		log_add(log_Error, "Couldn't create format_conv_surf: %s",
+			SDL_GetError());
 		return -1;
 	}
 	else
 	{
 		const SDL_PixelFormat* fmt = format_conv_surf->format;
-		log_add (log_Info, "  Internal: R %08x, G %08x, B %08x, A %08x",
-				fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
+		log_add(log_Info, "  Internal: R %08x, G %08x, B %08x, A %08x",
+			fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
 	}
-	
+
 	for (i = 0; i < TFB_GFX_NUMSCREENS; i++)
 	{
-		if (0 != ReInit_Screen (&SDL_Screens[i], format_conv_surf,
-				ScreenWidth, ScreenHeight))
+		if (0 != ReInit_Screen(&SDL_Screens[i], format_conv_surf,
+			ScreenWidth, ScreenHeight))
 			return -1;
 	}
 
 	SDL_Screen = SDL_Screens[0];
 	TransitionScreen = SDL_Screens[2];
 
-	if (0 != ReInit_Screen (&fade_color_surface, format_conv_surf,
-			ScreenWidth, ScreenHeight))
+	if (0 != ReInit_Screen(&fade_color_surface, format_conv_surf,
+		ScreenWidth, ScreenHeight))
 		return -1;
-	fade_color = SDL_MapRGB (fade_color_surface->format, 0, 0, 0);
-	SDL_FillRect (fade_color_surface, NULL, fade_color);
-	
-	if (0 != ReInit_Screen (&fade_temp, format_conv_surf,
-			ScreenWidth, ScreenHeight))
+	fade_color = SDL_MapRGB(fade_color_surface->format, 0, 0, 0);
+	SDL_FillRect(fade_color_surface, NULL, fade_color);
+
+	if (0 != ReInit_Screen(&fade_temp, format_conv_surf,
+		ScreenWidth, ScreenHeight))
 		return -1;
 
 	if (ScreenWidthActual > ScreenWidth || ScreenHeightActual > ScreenHeight)
 	{
-		if (0 != ReInit_Screen (&scaled_display, format_conv_surf,
-				ScreenWidthActual, ScreenHeightActual))
+		if (0 != ReInit_Screen(&scaled_display, format_conv_surf,
+			ScreenWidthActual, ScreenHeightActual))
 			return -1;
 
-		scaler = Scale_PrepPlatform (flags, SDL_Screen->format);
+		scaler = Scale_PrepPlatform(flags, SDL_Screen->format);
 	}
 	else
 	{	// no need to scale
