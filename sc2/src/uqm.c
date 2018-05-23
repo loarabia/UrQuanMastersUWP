@@ -635,13 +635,15 @@ getUserConfigOptions (struct options_struct *options)
 	// Most of the user config options are only applied if they
 	// have not already been set (i.e. on the commandline)
 
-	if (res_IsInteger ("config.reswidth") && res_IsInteger ("config.resheight")
-			&& !options->resolution.set)
-	{
-		options->resolution.width = res_GetInteger ("config.reswidth");
-		options->resolution.height = res_GetInteger ("config.resheight");
-		options->resolution.set = true;
-	}
+	// TODO FIX ME. PUT RESOLUTION CONFIG BACK IN THE USERS CONTROL
+	// MAYBE. SDL FULLSCREEN AND WINDOWED MODE MIGHT JUST BE BETTER.
+	//if (res_IsInteger ("config.reswidth") && res_IsInteger ("config.resheight")
+	//		&& !options->resolution.set)
+	//{
+	//	options->resolution.width = res_GetInteger ("config.reswidth");
+	//	options->resolution.height = res_GetInteger ("config.resheight");
+	//	options->resolution.set = true;
+	//}
 
 	getListConfigValue (&options->scaler, "config.scaler", scalerList);
 

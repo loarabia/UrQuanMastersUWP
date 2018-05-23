@@ -118,9 +118,9 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 	}
 	else
 	{
-		videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 640 * 2;
-		ScreenHeightActual = 480 * 2;
+		//videomode_flags = SDL_SWSURFACE;
+		ScreenWidthActual = 320;
+		ScreenHeightActual = 240;
 		graphics_backend = &pure_scaled_backend;
 
 		if (width != 640 || height != 480)
@@ -141,14 +141,54 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		ScreenWidthActual, ScreenHeightActual,
-		videomode_flags);
+		SDL_WINDOW_RESIZABLE);
 
-	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, SDL_RENDERER_SOFTWARE);
+	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, NULL);
+	SDL_RenderSetLogicalSize(SDL_ScreenRenderer, ScreenWidthActual, ScreenHeightActual);
 	if (SDL_ScreenRenderer == NULL) {
 		const char * sdl_error = SDL_GetError();
 	}
 
-	SDL_Video = SDL_GetWindowSurface(SDL_MainWindow);
+	SDL_Video = SDL_CreateRGBSurface(
+		NULL,
+		ScreenWidthActual,
+		ScreenHeightActual,
+		32,
+		NULL,
+		NULL,
+		NULL,
+		NULL);
+
+	SDL_MainWindowTexture = SDL_CreateTexture(
+		SDL_ScreenRenderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		ScreenWidthActual,
+		ScreenHeightActual);
+	
+	SDL_RenderClear(SDL_ScreenRenderer);
+
+#ifdef GRAPHICS_DEBUG
+	SDL_SecondWindow = SDL_CreateWindow("Graphics Debugger", 0, 0, 640, 480, SDL_WINDOW_RESIZABLE);
+	SDL_SecondRenderer = SDL_CreateRenderer(SDL_SecondWindow, -1, NULL);
+	if (SDL_SecondWindow == NULL || SDL_SecondRenderer == NULL) {
+		log_add(log_Debug, "Couldn't start up graphics debugging tools.");
+	}
+	int secondary_width;
+	int secondary_height;
+	SDL_GetWindowSize(SDL_SecondWindow, &secondary_width, &secondary_height);
+	
+	SDL_SecondWindowTexture = SDL_CreateTexture(
+		SDL_SecondRenderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		secondary_width,
+		secondary_height);
+
+	SDL_SetRenderDrawColor(SDL_SecondRenderer, 255, 0, 0, 255);
+	SDL_RenderDrawLine(SDL_SecondRenderer, 0, 0, 640, 480);
+	SDL_RenderPresent(SDL_SecondRenderer);
+#endif
 
 	if (SDL_Video == NULL)
 	{
@@ -156,29 +196,6 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 			ScreenWidthActual, ScreenHeightActual,
 			SDL_GetError());
 		return -1;
-	}
-
-	const SDL_Surface *video = SDL_GetWindowSurface(SDL_MainWindow);
-	const SDL_PixelFormat* fmt = video->format;
-
-	ScreenColorDepth = fmt->BitsPerPixel;
-	log_add(log_Info, "Set the resolution to: %ix%ix%i",
-		video->w, video->h, ScreenColorDepth);
-	log_add(log_Info, "  Video: R %08x, G %08x, B %08x, A %08x",
-		fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask);
-
-	if (togglefullscreen)
-	{
-		// NOTE: We cannot change the format_conv_surf now because we
-		//   have already loaded lots of graphics and changing it now
-		//   will only lead to chaos.
-		// Just check if channel order has changed significantly
-		CalcAlphaFormat(fmt, &conv_fmt);
-		fmt = format_conv_surf->format;
-		if (conv_fmt.Rmask != fmt->Rmask || conv_fmt.Bmask != fmt->Bmask)
-			log_add(log_Warning, "Warning: pixel format has changed "
-				"significantly. Rendering will be slow.");
-		return 0;
 	}
 
 
@@ -283,6 +300,34 @@ TFB_Pure_UninitGraphics (void)
 	UnInit_Screen (&fade_temp);
 }
 
+
+void show_buffer(SDL_Window * window, SDL_Renderer *renderer, SDL_Surface *buffer, SDL_Texture *texture) {
+	if (buffer == NULL) {
+		buffer = SDL_Screens[TFB_SCREEN_MAIN];
+	}
+	void *dontCarePixels;
+	int dontCarePitch;
+
+	
+	int result = SDL_LockTexture(texture, NULL, &dontCarePixels, &dontCarePitch);
+	if (result == -1) {
+		log_add(log_Debug, "Couldn't Lock texture");
+		return;
+	}
+	memcpy(dontCarePixels, buffer->pixels, buffer->pitch * buffer->h);
+	SDL_UnlockTexture(texture);
+	
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+#ifdef GRAPHICS_DEBUG	
+	SDL_SetRenderDrawColor(SDL_SecondRenderer, 0, 255, 0, 255);
+	SDL_RenderDrawLine(SDL_SecondRenderer, 640, 0, 0, 480);
+#endif // GRAPHICS_DEBUG
+
+	SDL_RenderPresent(renderer);
+}
+
+
 static SDL_Surface *backbuffer = NULL, *scalebuffer = NULL;
 static SDL_Rect updated;
 
@@ -342,24 +387,8 @@ TFB_Pure_Unscaled_Preprocess (int force_full_redraw, int transition_amount, int 
 
 static void
 TFB_Pure_Scaled_Postprocess (void)
-{
-	SDL_LockSurface (scalebuffer);
-	SDL_LockSurface (backbuffer);
-
-	if (scaler)
-		scaler (backbuffer, scalebuffer, &updated);
-		
-	SDL_UnlockSurface (backbuffer);
-	SDL_UnlockSurface (scalebuffer);
-
-	updated.x *= 4;
-	updated.y *= 4;
-	updated.w *= 4;
-	updated.h *= 4;
-	if (scalebuffer != SDL_Video)
-		SDL_BlitSurface (scalebuffer, &updated, SDL_Video, &updated);
-
-	SDL_UpdateWindowSurfaceRects(SDL_MainWindow, &updated, 1);
+{	
+	show_buffer(SDL_MainWindow, SDL_ScreenRenderer, backbuffer, SDL_MainWindowTexture);
 }
 
 static void
@@ -373,8 +402,20 @@ TFB_Pure_ScreenLayer (SCREEN screen, Uint8 a, SDL_Rect *rect)
 {
 	if (SDL_Screens[screen] == backbuffer)
 		return;
-	SDL_SetSurfaceAlphaMod (SDL_Screens[screen], a);
-	SDL_BlitSurface (SDL_Screens[screen], rect, backbuffer, rect);
+	//SDL_SetSurfaceAlphaMod (SDL_Screens[screen], a);
+	//SDL_BlitSurface (SDL_Screens[screen], rect, backbuffer, rect);
+
+	void *dontCarePixels;
+	int dontCarePitch;
+
+	SDL_BlitSurface(SDL_Screens[screen], &updated, SDL_Video, &updated);
+
+	//SDL_LockTexture(SDL_MainWindowTexture, NULL, &dontCarePixels, &dontCarePitch);
+	//memcpy(dontCarePixels, SDL_Screens[screen]->pixels, dontCarePitch * 480);
+	//SDL_UnlockTexture(SDL_MainWindowTexture);
+
+	//SDL_RenderPresent(SDL_ScreenRenderer);
+
 }	
 
 static void

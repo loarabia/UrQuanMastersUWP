@@ -39,6 +39,12 @@ SDL_Surface *SDL_Screen;
 SDL_Surface *TransitionScreen;
 SDL_Renderer *SDL_ScreenRenderer;
 SDL_Window *SDL_MainWindow;
+#ifdef GRAPHICS_DEBUG
+SDL_Window *SDL_SecondWindow;
+SDL_Renderer *SDL_SecondRenderer;
+SDL_Texture *SDL_SecondWindowTexture;
+#endif
+SDL_Texture *SDL_MainWindowTexture;
 
 SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 

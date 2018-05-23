@@ -43,6 +43,13 @@ extern SDL_Surface *SDL_Video;
 extern SDL_Surface *SDL_Screen;
 extern SDL_Surface *TransitionScreen;
 extern SDL_Renderer *SDL_ScreenRenderer;
+extern SDL_Texture *SDL_MainWindowTexture;
+
+#ifdef GRAPHICS_DEBUG
+extern SDL_Window *SDL_SecondWindow;
+extern SDL_Renderer *SDL_SecondRenderer;
+extern SDL_Texture *SDL_SecondWindowTexture;
+#endif
 
 extern SDL_Surface *SDL_Screens[TFB_GFX_NUMSCREENS];
 
