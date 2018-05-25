@@ -143,11 +143,18 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 		ScreenWidthActual, ScreenHeightActual,
 		SDL_WINDOW_RESIZABLE);
 
+	log_add(log_Info, "SDL initialized.");
+	log_add(log_Info, "Initializing Screen.");
+
 	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, NULL);
 	SDL_RenderSetLogicalSize(SDL_ScreenRenderer, ScreenWidthActual, ScreenHeightActual);
 	if (SDL_ScreenRenderer == NULL) {
 		const char * sdl_error = SDL_GetError();
 	}
+
+	SDL_RendererInfo renderer_info;
+	SDL_GetRendererInfo(SDL_ScreenRenderer, &renderer_info);
+	log_add(log_Info, "SDL driver used: %s", renderer_info.name);
 
 	SDL_Video = SDL_CreateRGBSurface(
 		NULL,
@@ -265,16 +272,6 @@ TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 	char VideoName[256];
 
 	log_add (log_Info, "Initializing Pure-SDL graphics.");
-
-	/*SDL_VideoDriverName (VideoName, sizeof (VideoName));
-	log_add (log_Info, "SDL driver used: %s", VideoName);*/
-			// Set the environment variable SDL_VIDEODRIVER to override
-			// For Linux: x11 (default), dga, fbcon, directfb, svgalib,
-			//            ggi, aalib
-			// For Windows: directx (default), windib
-
-	log_add (log_Info, "SDL initialized.");
-	log_add (log_Info, "Initializing Screen.");
 
 	ScreenWidth = 320;
 	ScreenHeight = 240;

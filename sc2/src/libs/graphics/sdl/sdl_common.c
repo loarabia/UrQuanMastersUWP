@@ -127,6 +127,23 @@ TFB_ReInitGraphics (int driver, int flags, int width, int height)
 	return result;
 }
 
+/*
+	TFB_InitGraphics:
+		Initializes the graphics subsystem creating the drawingQueue and the SDL_Window that will be rendered.  
+	
+		driver:
+			An integer indicating which SDL driver model to initialize. Today its always the value TFB_GFXDRIVER_SDL_PURE(0).
+			In a previous version of the code, you could also ask for TFB_GFXDRIVER_SDL_OPENGL. However, SDL2 does a good job
+			of initializing either a Hardware or Software renderer so the OpenGL specific code was removed and the SDL_Renderer
+			handles a lot of what the specific graphics backends were doing in the SDL 1.2 version of the codebase.
+		flags:
+			Options flags from the user's configration (either command line or setup menu if the settings are tweaked). To see a
+			full list search for TFB_GFXFLAGS_XXXXX. Some examples are fullscreen or not and which scaling technique to use.
+		width:
+			The width of the window.
+		height:
+			The height of the window.
+ */
 int
 TFB_InitGraphics (int driver, int flags, int width, int height)
 {
@@ -139,8 +156,8 @@ TFB_InitGraphics (int driver, int flags, int width, int height)
 	sprintf (caption, "The Ur-Quan Masters v%d.%d.%d%s", 
 			UQM_MAJOR_VERSION, UQM_MINOR_VERSION, 
 			UQM_PATCH_VERSION, UQM_EXTRA_VERSION);
-	// TODO FIX ME: Breaking this for now
-	//SDL_WM_SetCaption (caption, NULL);
+
+	SDL_SetWindowTitle(SDL_MainWindow, caption);
 
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
 		SDL_ShowCursor (SDL_DISABLE);
