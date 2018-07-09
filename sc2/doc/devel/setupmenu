@@ -1,0 +1,44 @@
+TODO FIXME Document all the various "config.*" options.
+
+These options are useful because they are the options that we will bind to the UI layer. They make up the
+data model of the game.
+
+The UI layer that I want is something like this (instead of the hardocded Widgets stuff)
+
+<UICMD> <UILABEL> | <DATATYPE> <DATALABEL>
+
+e.g. 
+
+I'm really not sure how to get this right now. I'm going to have to do more surgery to make this work.
+Cool thing though is that 2 lines will become one for some of these things (yay!!) and a bunch more code will be gone.
+
+	//	options->resolution.width = res_GetInteger ("config.reswidth");
+	//	options->resolution.height = res_GetInteger ("config.resheight");
+	//	options->resolution.set = true;
+
+What I think I want as a menu format and how to bind it to the resource model that already exists (modulo some surgery).
+
+
+CLROOT "UrQuan Masters Setup" | NULL NULL
+    CLNODE "Graphics Options" | NULL NULL
+        CLCHOICE "Resolution" | pair(int:config.reswidth, int:config.resheight)" <NULL>
+        CLBOOL "Fullscreen?" | BOOLEAN "config.fullscreen"
+        CLBOOL "Show FPS?"  | BOOLEAN "config.showfps"
+    CLNODE "Sound Options" | NULL NULL
+        CLCHOICE "" | BOOLEAN "config.3domusic"
+        . . . 
+        etc . . .
+        maybe? . . . 
+
+Nesting with whitespace indicates grouping.
+Some nodes are NULL which means they are not participating in the data tree but they may in fact do something
+in the UI tree.
+
+This design is a little less efficient for parsing out just the top level nodes for creating the intial menu landing screen.
+If it ever becomes a problem, it could be optimized by pulling those in a flat list at the top of the file.
+
+We're going to get rid of about 1300 lines in setupmenu (hopefully) and a ton of complexity and hardcoded
+code in the menu config file as well as in the game config code. The idea is that you can edit the textual description 
+of the setupmenu and it will bind to the right data model features and draw the right things. The current Setupmenu is quite
+painful to mess with by hand. The alternative ibeing to implement a tool that generates the code for creating the C code that
+helps implement that.
