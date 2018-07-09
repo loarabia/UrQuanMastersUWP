@@ -107,26 +107,9 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 
 	GraphicsDriver = driver;
 
-	// must use SDL_SWSURFACE, HWSURFACE doesn't work properly
-	// with fades/scaling
-	if (width == 320 && height == 240)
-	{
-		videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 320;
-		ScreenHeightActual = 240;
-		graphics_backend = &pure_unscaled_backend;
-	}
-	else
-	{
-		//videomode_flags = SDL_SWSURFACE;
-		ScreenWidthActual = 320;
-		ScreenHeightActual = 240;
-		graphics_backend = &pure_scaled_backend;
-
-		if (width != 640 || height != 480)
-			log_add(log_Error, "Screen resolution of %dx%d not supported "
-				"under pure SDL, using 640x480", width, height);
-	}
+	ScreenWidthActual = width;
+	ScreenHeightActual = height;
+	graphics_backend = &pure_scaled_backend;
 
 	//videomode_flags |= SDL_ANYFORMAT;
 	if (flags & TFB_GFXFLAGS_FULLSCREEN)
@@ -140,14 +123,14 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 	SDL_MainWindow = SDL_CreateWindow("Ur-Quan Masters",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		ScreenWidthActual, ScreenHeightActual,
+		width, height,
 		SDL_WINDOW_RESIZABLE);
 
 	log_add(log_Info, "SDL initialized.");
 	log_add(log_Info, "Initializing Screen.");
 
 	SDL_ScreenRenderer = SDL_CreateRenderer(SDL_MainWindow, -1, NULL);
-	SDL_RenderSetLogicalSize(SDL_ScreenRenderer, ScreenWidthActual, ScreenHeightActual);
+	SDL_RenderSetLogicalSize(SDL_ScreenRenderer, width, height);
 	if (SDL_ScreenRenderer == NULL) {
 		const char * sdl_error = SDL_GetError();
 	}
@@ -158,8 +141,8 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 
 	SDL_Video = SDL_CreateRGBSurface(
 		NULL,
-		ScreenWidthActual,
-		ScreenHeightActual,
+		width,
+		height,
 		32,
 		NULL,
 		NULL,
@@ -170,8 +153,8 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 		SDL_ScreenRenderer,
 		SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		ScreenWidthActual,
-		ScreenHeightActual);
+		width,
+		height);
 	
 	SDL_RenderClear(SDL_ScreenRenderer);
 
@@ -200,7 +183,7 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 	if (SDL_Video == NULL)
 	{
 		log_add(log_Error, "Couldn't set %ix%i video mode: %s",
-			ScreenWidthActual, ScreenHeightActual,
+			width, height,
 			SDL_GetError());
 		return -1;
 	}
@@ -269,12 +252,10 @@ TFB_Pure_ConfigureVideo(int driver, int flags, int width, int height, int toggle
 int
 TFB_Pure_InitGraphics (int driver, int flags, int width, int height)
 {
-	char VideoName[256];
-
 	log_add (log_Info, "Initializing Pure-SDL graphics.");
 
-	ScreenWidth = 320;
-	ScreenHeight = 240;
+	ScreenWidth = width;
+	ScreenHeight = height;
 
 	if (TFB_Pure_ConfigureVideo (driver, flags, width, height, 0))
 	{
