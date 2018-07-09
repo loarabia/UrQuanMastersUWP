@@ -40,8 +40,6 @@
 #include <math.h>
 
 
-static STRING SetupTab;
-
 typedef struct setup_menu_state {
 	BOOLEAN (*InputFunc) (struct setup_menu_state *pInputState);
 
@@ -779,7 +777,7 @@ static stringbank *bank = NULL;
 static FRAME setup_frame = NULL;
 
 static void
-init_widgets (void)
+init_widgets (STRING setupTab)
 {
 	const char *buffer[100], *str, *title;
 	int count, i, index;
@@ -794,7 +792,7 @@ init_widgets (void)
 		setup_frame = CaptureDrawable (LoadGraphic (MENUBKG_PMAP_ANIM));
 	}
 
-	count = GetStringTableCount (SetupTab);
+	count = GetStringTableCount (setupTab);
 
 	if (count < 3)
 	{
@@ -803,8 +801,8 @@ init_widgets (void)
 	}
 
 	/* Menus */
-	title = StringBank_AddOrFindString (bank, GetStringAddress (SetAbsStringTableIndex (SetupTab, 0)));
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 1)), '\n', 100, buffer, bank) != MENU_COUNT)
+	title = StringBank_AddOrFindString (bank, GetStringAddress (SetAbsStringTableIndex (setupTab, 0)));
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, 1)), '\n', 100, buffer, bank) != MENU_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Menu Subtitles");
@@ -835,7 +833,7 @@ init_widgets (void)
 	}
 		
 	/* Options */
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, 2)), '\n', 100, buffer, bank) != CHOICE_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, 2)), '\n', 100, buffer, bank) != CHOICE_COUNT)
 	{
 		log_add (log_Fatal, "PANIC: Incorrect number of Choice Options");
 		exit (EXIT_FAILURE);
@@ -870,7 +868,7 @@ init_widgets (void)
 			log_add (log_Fatal, "PANIC: String table cut short while reading choices");
 			exit (EXIT_FAILURE);
 		}
-		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		str = GetStringAddress (SetAbsStringTableIndex (setupTab, index++));
 		optcount = SplitString (str, '\n', 100, buffer, bank);
 		choices[i].numopts = optcount;
 		choices[i].options = HMalloc (optcount * sizeof (CHOICE_OPTION));
@@ -890,7 +888,7 @@ init_widgets (void)
 				log_add (log_Fatal, "PANIC: String table cut short while reading choices");
 				exit (EXIT_FAILURE);
 			}
-			str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+			str = GetStringAddress (SetAbsStringTableIndex (setupTab, index++));
 			tipcount = SplitString (str, '\n', 100, buffer, bank);			
 			if (tipcount > 3)
 			{
@@ -924,7 +922,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != SLIDER_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != SLIDER_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Slider Options");
@@ -964,7 +962,7 @@ init_widgets (void)
 			log_add (log_Fatal, "PANIC: String table cut short while reading sliders");
 			exit (EXIT_FAILURE);
 		}
-		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		str = GetStringAddress (SetAbsStringTableIndex (setupTab, index++));
 		tipcount = SplitString (str, '\n', 100, buffer, bank);
 		if (tipcount > 3)
 		{
@@ -983,7 +981,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != BUTTON_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != BUTTON_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Button Options");
@@ -1014,7 +1012,7 @@ init_widgets (void)
 			log_add (log_Fatal, "PANIC: String table cut short while reading buttons");
 			exit (EXIT_FAILURE);
 		}
-		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		str = GetStringAddress (SetAbsStringTableIndex (setupTab, index++));
 		tipcount = SplitString (str, '\n', 100, buffer, bank);
 		if (tipcount > 3)
 		{
@@ -1033,7 +1031,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != LABEL_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != LABEL_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Label Options");
@@ -1062,7 +1060,7 @@ init_widgets (void)
 			log_add (log_Fatal, "PANIC: String table cut short while reading labels");
 			exit (EXIT_FAILURE);
 		}
-		str = GetStringAddress (SetAbsStringTableIndex (SetupTab, index++));
+		str = GetStringAddress (SetAbsStringTableIndex (setupTab, index++));
 		linecount = SplitString (str, '\n', 100, buffer, bank);
 		labels[i].line_count = linecount;
 		labels[i].lines = (const char **)HMalloc(linecount * sizeof(const char *));
@@ -1079,7 +1077,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
 	{
 		log_add (log_Fatal, "PANIC: Incorrect number of Text Entries");
 		exit (EXIT_FAILURE);
@@ -1107,7 +1105,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != TEXTENTRY_COUNT)
 	{
 		/* TODO: Ignore extras instead of dying. */
 		log_add (log_Fatal, "PANIC: Incorrect number of Text Entries");
@@ -1127,7 +1125,7 @@ init_widgets (void)
 		exit (EXIT_FAILURE);
 	}
 
-	if (SplitString (GetStringAddress (SetAbsStringTableIndex (SetupTab, index++)), '\n', 100, buffer, bank) != CONTROLENTRY_COUNT)
+	if (SplitString (GetStringAddress (SetAbsStringTableIndex (setupTab, index++)), '\n', 100, buffer, bank) != CONTROLENTRY_COUNT)
 	{
 		log_add (log_Fatal, "PANIC: Incorrect number of Control Entries");
 		exit (EXIT_FAILURE);
@@ -1159,7 +1157,7 @@ init_widgets (void)
 }
 
 static void
-clean_up_widgets (void)
+clean_up_widgets (STRING setupTab)
 {
 	int i;
 
@@ -1181,10 +1179,10 @@ clean_up_widgets (void)
 
 	/* Clear out the master tables */
 	
-	if (SetupTab)
+	if (setupTab)
 	{
-		DestroyStringTable (ReleaseStringTable (SetupTab));
-		SetupTab = 0;
+		DestroyStringTable (ReleaseStringTable (setupTab));
+		setupTab = 0;
 	}
 	if (bank)
 	{
@@ -1202,29 +1200,26 @@ void
 SetupMenu (void)
 {
 	SETUP_MENU_STATE s;
+	STRING setupTab;
 
 	s.InputFunc = DoSetupMenu;
 	s.initialized = FALSE;
 	SetMenuSounds (MENU_SOUND_ARROWS, MENU_SOUND_SELECT);
-	SetupTab = CaptureStringTable (LoadStringTable (SETUP_MENU_STRTAB));
-	if (SetupTab) 
+	setupTab = CaptureStringTable (LoadStringTable (SETUP_MENU_STRTAB));
+	if (setupTab == NULL) 
 	{
-		init_widgets ();
+		log_add(log_Fatal, "PANIC: Could not find strings for the setup menu!");
+		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		log_add (log_Fatal, "PANIC: Could not find strings for the setup menu!");
-		exit (EXIT_FAILURE);
-	}
+
+	init_widgets(setupTab);
+
 	done = FALSE;
 
 	DoInput (&s, TRUE);
 	GLOBAL (CurrentActivity) &= ~CHECK_ABORT;
 	PropagateResults ();
-	if (SetupTab)
-	{
-		clean_up_widgets ();
-	}
+	clean_up_widgets (setupTab);
 }
 
 void
